@@ -1,0 +1,117 @@
+<%- include layout/headder %>
+	
+<body>
+<!-- banner-body -->
+	<div class="banner-body">
+		<div class="container">
+			<div class="banner-body-content">
+			<%- include layout/nav %>
+			<div class="col-xs-9 banner-body-right">
+				<div class="gallery-head">
+					<h5><% if(user_name){ %><%= user_name+" " %><% } %>Blog</h5>
+					<p>Some articles that have benefited a lot.</p>
+				</div>
+				<div class="blog">
+					<% if(posts.length==0){ %>
+						<div class="alert alert-warning" role="alert">
+							<strong>Prompt!</strong> No article.
+						</div>
+					<% }else{ %>
+						<% posts.forEach(function(post, index){ %>
+						<div class="blog-grid">
+							<div class="col-xs-4 blog-grid-left">
+								<a href="single.html"><img src="/images/1.jpg" alt=" " class="img-responsive"></a>
+							</div>
+							<div class="col-xs-8 blog-grid-right">
+								<h4><a href="/blog/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h4>
+								<p style="margin: 0;"><a href="/blog/<%= post.name %>" style="color: #666;"><%= post.name %></a><span style="margin-left: 25px">time:<%= post.time.minute %></span></p>
+								<p><%= post.brief %></p>
+								<% if(user && (user.name == post.name)){ %>
+								<p style="text-align: right;"><a href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>" style="font-size: 12px;color: #666;padding: 0 10px;">编辑</a>|<a href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>" style="font-size: 12px;color: #666;padding: 0 10px;">删除</a></p>
+								<% } %>
+							</div>
+							<div class="clearfix"> </div>
+						</div>
+						<% }) %>
+					<% } %>
+					<!--<div class="blog-grid">
+						<div class="col-xs-4 blog-grid-left">
+							<a href="single.html"><img src="images/2.jpg" alt=" " class="img-responsive"></a>
+						</div>
+						<div class="col-xs-8 blog-grid-right">
+							<h4><a href="single.html">Sed ut perspiciatis unde omnis iste natus</a></h4>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+								tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+								quis nostrud exercitation.</p>
+							<a href="single.html"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></a>
+						</div>
+						<div class="clearfix"> </div>
+					</div>
+					<div class="blog-grid">
+						<div class="col-xs-4 blog-grid-left">
+							<a href="single.html"><img src="images/3.jpg" alt=" " class="img-responsive"></a>
+						</div>
+						<div class="col-xs-8 blog-grid-right">
+							<h4><a href="single.html">At vero eos et accusamus et iusto odio</a></h4>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+								tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+								quis nostrud exercitation.</p>
+							<a href="single.html"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></a>
+						</div>
+						<div class="clearfix"> </div>
+					</div>-->
+				</div>
+				
+				
+				<div class="msg-text-bottom">
+					<div class="col-md-4 msg-text-bottom-left">
+						<figure class="effect-winston">
+							<a href="single.html"><img src="/images/4.jpg" alt=" " class="img-responsive" />
+							<figcaption>
+								
+							</figcaption>		
+							</a>
+						</figure>
+
+						<h3><a href="single.html">vel illum qui dolorem</a></h3>
+						<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+							consectetur, adipisci velit, sed quia.</p>
+					</div>
+					<div class="col-md-4 msg-text-bottom-left">
+						<figure class="effect-winston">
+							<a href="single.html"><img src="/images/5.jpg" alt=" " class="img-responsive" />
+							<figcaption>
+								
+							</figcaption>	
+							</a>
+						</figure>
+						<h3><a href="single.html">quia dolor sit amet</a></h3>
+						<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+							consectetur, adipisci velit, sed quia.</p>
+					</div>
+					<div class="col-md-4 msg-text-bottom-left">
+						<figure class="effect-winston">
+							<a href="single.html"><img src="/images/6.jpg" alt=" " class="img-responsive" />
+							<figcaption>
+								
+							</figcaption>	
+							</a>
+						</figure>
+						<h3><a href="single.html">porro quisquam est</a></h3>
+						<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+							consectetur, adipisci velit, sed quia.</p>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+			</div>
+			<div class="clearfix"> </div>
+			<%- include layout/footer %>
+		</div>
+		</div>
+	</div>
+<!-- //banner-body -->
+<!-- for bootstrap working -->
+	<script src="/js/bootstrap.js"></script>
+<!-- //for bootstrap working -->
+</body>
+</html>

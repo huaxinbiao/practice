@@ -1,0 +1,93 @@
+<%- include layout/headder %>
+	
+<body>
+<!-- banner-body -->
+	<div class="banner-body">
+		<div class="container">
+			<div class="banner-body-content">
+			<%- include layout/nav %>
+			<div class="col-xs-9 banner-body-right">
+				<h2 style="font-family: 'Great Vibes', cursive; text-align: center;font-size: 60px;">Register</h2>
+				<% if(success){ %>
+				<div class="alert alert-success" role="alert">
+					<strong>Prompt!</strong> <%= success %>
+				</div>
+				<% }else if(error){ %>
+				<div class="alert alert-danger" role="alert">
+					<strong>Prompt!</strong> <%= error %>
+				</div>	
+				<% } %>
+				<form class="leave-comment" method="post">
+					<style>.form-control,.label{margin: 2em auto !important; width: 60% !important;}</style>
+					<input type="text" name="name" class="form-control" placeholder="Username" required=" ">
+					<input type="password" name="password" class="form-control" placeholder="Passwrod" required=" ">
+					<input type="password" name="password-repeat" class="form-control" placeholder="Repeat Passwrod" required=" ">
+					<input type="email" name="email" class="form-control" placeholder="Email">
+					<input type="submit" value="Submit" class="label label-success" />
+				
+				</form>
+				
+				
+				<div class="msg-text">
+					<div class="col-xs-2 msg-text-left">
+						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+					</div>
+					<div class="col-xs-10 msg-text-right">
+						<p>But I must explain to you how all this mistaken idea of 
+							denouncing pleasure and praising pain was born and I will give 
+							you a complete account of the system.</p>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+				<div class="msg-text-bottom">
+					<div class="col-md-4 msg-text-bottom-left">
+						<figure class="effect-winston">
+							<a href="single.html"><img src="images/4.jpg" alt=" " class="img-responsive" />
+							<figcaption>
+								
+							</figcaption>		
+							</a>
+						</figure>
+
+						<h3><a href="single.html">vel illum qui dolorem</a></h3>
+						<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+							consectetur, adipisci velit, sed quia.</p>
+					</div>
+					<div class="col-md-4 msg-text-bottom-left">
+						<figure class="effect-winston">
+							<a href="single.html"><img src="images/5.jpg" alt=" " class="img-responsive" />
+							<figcaption>
+								
+							</figcaption>	
+							</a>
+						</figure>
+						<h3><a href="single.html">quia dolor sit amet</a></h3>
+						<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+							consectetur, adipisci velit, sed quia.</p>
+					</div>
+					<div class="col-md-4 msg-text-bottom-left">
+						<figure class="effect-winston">
+							<a href="single.html"><img src="images/6.jpg" alt=" " class="img-responsive" />
+							<figcaption>
+								
+							</figcaption>	
+							</a>
+						</figure>
+						<h3><a href="single.html">porro quisquam est</a></h3>
+						<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+							consectetur, adipisci velit, sed quia.</p>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+			</div>
+			<div class="clearfix"> </div>
+			<%- include layout/footer %>
+		</div>
+		</div>
+	</div>
+<!-- //banner-body -->
+<!-- for bootstrap working -->
+	<script src="/js/bootstrap.js"></script>
+<!-- //for bootstrap working -->
+</body>
+</html>

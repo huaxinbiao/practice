@@ -6,6 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
+var settings = require('./settings');
+var flash = require('connect-flash');
+
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 
 var app = express();
 
@@ -13,6 +18,7 @@ var app = express();
 app.set('port',process.env.POST || 3000);
 app.set('views', path.join(__dirname, 'views'));//设置模板目录
 app.set('view engine', 'ejs');//设置模板引擎
+app.use(flash());
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));//设置favicon图标
@@ -21,6 +27,19 @@ app.use(bodyParser.json());//加载解析json的中间件
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));//设置静态文件存放目录
+
+//session
+app.use(session({
+	secret: settings.cookieSecret,
+	key: settings.db,//cookie name
+	cookie: {maxAge:1000 * 60 * 60 * 24 * 30},//30天
+	store: new MongoStore({
+		db: settings.db,
+		host: settings.host,
+		port: settings.port,
+		url: 'mongodb://localhost/blog'
+	})
+}));
 
 routes(app);
 
