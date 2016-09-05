@@ -27,53 +27,34 @@
 					
 				</div>
 				<div class="three-com">
-					<h3>2 Comment <span>on</span> <label>Donec volutpat ligula non dapibus volutpat</label></h3>
-					<div class="tom-grid">
+                    <% if(post.comments){ %>
+					<h3><%= post.comments.length %> Comment <span>on</span> <label>Donec volutpat ligula non dapibus volutpat</label></h3>
+					<% post.comments.forEach(function(comment, index){ %>
+                    <div class="tom-grid">
 						<div class="tom">
 							<img src="/images/co.png" alt=" ">
 						</div>
 						<div class="tom-right">
 							<div class="Hardy">
-								<h4><a href="#">Tom Hardy</a></h4>
-								<p><label>12 March 2016</label></p>
-							</div>
-							<div class="reply">
-								<a href="#">Reply</a>
+								<h4><a href="<% if(comment.whatUser==0){ %><%= %>/blog/<%= post.name %><% }else{ %>javascript:;<% } %>"><%= comment.name %></a></h4>
+								<p><label><%= comment.time.minute %></label></p>
 							</div>
 							<div class="clearfix"> </div>
-							<p class="lorem">There are many variations of passages of Lorem Ipsum available,
-							but the majority have suffered alteration in some form, by injected humour, 
-							or randomised words which don't.</p>
+							<p class="lorem"><%= comment.comment %></p>
 						</div>
 						<div class="clearfix"> </div>
 					</div>
-					<div class="tom-grid humour">
-						<div class="tom">
-							<img src="/images/co.png" alt=" ">
-						</div>
-						<div class="tom-right">
-							<div class="Hardy">
-								<h4><a href="#">Prad Pitt</a></h4>
-								<p><label>13 March 2016</label></p>
-							</div>
-							<div class="reply">
-								<a href="#">Reply</a>
-							</div>
-							<div class="clearfix"> </div>
-							<p class="lorem">There are many variations of passages of Lorem Ipsum available,
-							but the majority have suffered alteration in some form, by injected humour, 
-							or randomised words which don't.</p>
-						</div>
-						<div class="clearfix"> </div>
-					</div>
+                    <% }) %>
+                    <% } %>
 				</div>
 				<div class="leave-comment" style="margin-bottom: 50px;">
 					<h4>Leave your comment</h4>
 					<p>Suspendisse tempor tellus sed nisl semper, quis condimentum turpis pharetra.</p>
-					<form>
-						<input type="text" placeholder="Name" required=" ">			           					   
-						<input type="text" placeholder="Email" required=" ">
-						<textarea placeholder="Message" required=" "></textarea>
+					<form method="post">
+                        <% if(!user){ %>
+						<input type="text" placeholder="Name" required=" " name="name">
+                        <% } %>
+						<textarea placeholder="Input Comment" required=" " name="comment"></textarea>
 						<input type="submit" value="Submit">
 						<div class="clearfix"> </div>
 					</form>

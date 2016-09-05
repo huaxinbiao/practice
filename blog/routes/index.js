@@ -1,6 +1,7 @@
 var crypto = require('crypto'),//加密密码
 	User = require('../models/user.js'),
-	Post = require('../models/post.js');
+	Post = require('../models/post.js'),
+	Comment = require('../models/comment.js');
 	
 /* GET home page. */
 module.exports = function(app){
@@ -231,6 +232,43 @@ module.exports = function(app){
 			});
 		});
 	})
+
+    //文章评论
+    app.post('/blog/:name/:day/:title', function(req, res){
+        var date = new Date();
+        //储存各种时间格式
+        var time = {
+            date: date,
+            year: date.getFullYear(),
+            month: date.getFullYear() + "-" +(date.getMonth() + 1),
+            day: date.getFullYear() + "-" +(date.getMonth() + 1) + "-" + date.getDate(),
+            minute: date.getFullYear() + "-" +(date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" +(date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes())
+        }
+        if(req.session.user){
+            var name = req.session.user.name;
+            var whatUser = 0;
+        }else{
+            var name = req.body.name;
+            var whatUser = 1;
+        }
+        var comment = {
+            name: name,
+            head: '',
+            time: time,
+            comment: req.body.comment,
+            whatUser: whatUser
+        }
+		var newComment = new Comment(req.params.name, req.params.title, req.params.day, comment);
+		newComment.save(function(err){
+			if(err){
+				req.flash('error', err);
+				return res.redirect('blog');
+			}
+			req.flash('success','评论成功！');
+			res.redirect('back');
+		});
+
+    });
 	
 	//编辑文章页
 	app.get('/edit/:name/:day/:title',checkLogin);
