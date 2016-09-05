@@ -20,7 +20,7 @@
 						<% posts.forEach(function(post, index){ %>
 						<div class="blog-grid">
 							<div class="col-xs-4 blog-grid-left">
-								<a href="single.html"><img src="/images/1.jpg" alt=" " class="img-responsive"></a>
+								<a href="/blog/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><img src="/images/1.jpg" alt=" " class="img-responsive"></a>
 							</div>
 							<div class="col-xs-8 blog-grid-right">
 								<h4><a href="/blog/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h4>
