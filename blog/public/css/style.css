@@ -732,7 +732,7 @@ figure.effect-winston:hover figcaption::before {
 .blog-grid-right a:hover span{
 	color: #D57D39;
 }
-.blog-grid:nth-child(2){
+.blog-grid{
 	margin:2em 0;
 }
 /*-- //blog --*/
