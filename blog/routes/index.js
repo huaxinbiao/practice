@@ -200,17 +200,28 @@ module.exports = function(app){
 
     //所有文章列表
 	app.get('/blog/index', function(req, res){
-        var post = new Page(null, 1, 10, 'posts');
+        if(req.query.page){
+            var page = req.query.page;
+        }else{
+           var page = 1;
+        }
+        var post = new Page(null, page, 10, 'posts');
         post.find(function(err, posts, total){
             if(err){
 				req.flash('error', err);
 				return res.redirect('404');
+            }
+            console.log(posts.length)
+            if(posts.length==0 && page!=1){
+                res.redirect('/blog/index?page=1');
             }
 		    res.render('blog', {
 			  	title: 'Great Taste',
 			  	user: req.session.user,
                 user_name: '',
 			  	posts: posts,
+                total: Math.ceil(total/10),
+                page: parseInt(page),
 			  	success: req.flash('success').toString(),
 			  	error: req.flash('error').toString()
 		    });

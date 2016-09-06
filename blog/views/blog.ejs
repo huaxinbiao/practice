@@ -26,7 +26,7 @@
 								<h4><a href="/blog/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h4>
 								<p style="margin: 0;"><a href="/blog/<%= post.name %>" style="color: #666;"><%= post.name %></a><span style="margin-left: 25px">time:<%= post.time.minute %></span></p>
 								<p><%= post.brief %></p>
-								<% if(user && (user.name == post.name)){ %>
+								<% if(user && (user.name == post.name) && user_name){ %>
 								<p style="text-align: right;"><a href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>" style="font-size: 12px;color: #666;padding: 0 10px;">编辑</a>|<a href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>" style="font-size: 12px;color: #666;padding: 0 10px;">删除</a></p>
 								<% } %>
 							</div>
@@ -34,42 +34,45 @@
 						</div>
 						<% }) %>
 					<% } %>
-					<!--<div class="blog-grid">
-						<div class="col-xs-4 blog-grid-left">
-							<a href="single.html"><img src="images/2.jpg" alt=" " class="img-responsive"></a>
-						</div>
-						<div class="col-xs-8 blog-grid-right">
-							<h4><a href="single.html">Sed ut perspiciatis unde omnis iste natus</a></h4>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-								tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-								quis nostrud exercitation.</p>
-							<a href="single.html"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></a>
-						</div>
-						<div class="clearfix"> </div>
-					</div>
-					<div class="blog-grid">
-						<div class="col-xs-4 blog-grid-left">
-							<a href="single.html"><img src="images/3.jpg" alt=" " class="img-responsive"></a>
-						</div>
-						<div class="col-xs-8 blog-grid-right">
-							<h4><a href="single.html">At vero eos et accusamus et iusto odio</a></h4>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-								tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-								quis nostrud exercitation.</p>
-							<a href="single.html"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></a>
-						</div>
-						<div class="clearfix"> </div>
-					</div>-->
 				</div>
 				<div style="text-align: center;">
                     <ul class="pagination">
-                        <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
-                        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            <li<% if(page == 1){ %> class="disabled"<% } %>><a href="<% if(page != 1){ %><%= '/blog/index?page='+(page-1) %><% } %>" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                            <%
+                                switch(page){
+                                case 1:
+                                  var nextall = page+5;
+                                  var pverall = 1;
+                                  break;
+                                case 2:
+                                  var nextall = page+4;
+                                  var pverall = 1;
+                                  break;
+                                case total-1:
+                                  var nextall = page+2;
+                                  var pverall = page-3;
+                                  break;
+                                case total-2:
+                                  var nextall = page+3;
+                                  var pverall = page-2;
+                                  break;
+                                case total:
+                                  var nextall = page+1;
+                                  var pverall = page-4;
+                                  break;
+                                default:
+                                  var nextall = page+3;
+                                  var pverall = page-2;
+                                };
+                                if(total<5){
+                                  nextall = total+1;
+                                  pverall = 1;
+                                }
+                                for(var i=pverall; i<nextall; i++){
+                            %>
+                                <li<% if(page == i){ %> class="active"<% } %>><a href="<% if(page == i){ %>javascript:;<% }else{ %><%= '/blog/index?page='+i %><% } %>"><%= i %><% if(page == i){ %> <span class="sr-only">(current)</span><% } %></a></li>
+                            <% } %>
+                            <li<% if(page == total){ %> class="disabled"<% } %>><a href="<% if(page != total){ %><%= '/blog/index?page='+(parseInt(page)+1) %><% } %>" aria-label="Next"><span aria-hidden="true">»</span></a></li>
                     </ul>
                 </div>
 				
