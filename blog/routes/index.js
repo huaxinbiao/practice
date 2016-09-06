@@ -1,17 +1,20 @@
 var crypto = require('crypto'),//加密密码
 	User = require('../models/user.js'),
 	Post = require('../models/post.js'),
-	Comment = require('../models/comment.js');
+	Comment = require('../models/comment.js'),
+	Page = require('../models/page.js');
 	
 /* GET home page. */
 module.exports = function(app){
 	//首页
 	//输出博客文章列表
 	app.get('/', function(req, res) {
-		Post.getAll(null, function(err, posts){
-			if(err){
-				posts = [];
-			}
+        var post = new Page(null, 1, 6, 'posts');
+        post.find(function(err, posts, total){
+            if(err){
+				req.flash('error', err);
+				return res.redirect('404');
+            }
 		    res.render('index', { 
 			  	title: 'Great Taste',
 			  	user: req.session.user,
@@ -19,8 +22,12 @@ module.exports = function(app){
 			  	success: req.flash('success').toString(),
 			  	error: req.flash('error').toString()
 		    });
-		});
+        });
 	});
+
+    app.get('/index', function(req, res) {
+        req.redirect('/')
+    });
 	
 	//注册页
 	app.get('/reg',checkNotLogin);
@@ -146,6 +153,7 @@ module.exports = function(app){
 			res.redirect('/');
 		});
 	});
+
 	
 	//我的 blog文章列表,没登录显示全部文章列表
 	app.get('/blog', function(req, res){
@@ -189,7 +197,26 @@ module.exports = function(app){
 			});
 		}
 	});
-	
+
+    //所有文章列表
+	app.get('/blog/index', function(req, res){
+        var post = new Page(null, 1, 10, 'posts');
+        post.find(function(err, posts, total){
+            if(err){
+				req.flash('error', err);
+				return res.redirect('404');
+            }
+		    res.render('blog', {
+			  	title: 'Great Taste',
+			  	user: req.session.user,
+                user_name: '',
+			  	posts: posts,
+			  	success: req.flash('success').toString(),
+			  	error: req.flash('error').toString()
+		    });
+        });
+    })
+
 	//筛选一个用户的文章列表
 	app.get('/blog/:name', function(req, res){
 		//检查用户是否存在
