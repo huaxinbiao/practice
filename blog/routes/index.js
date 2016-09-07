@@ -143,7 +143,7 @@ module.exports = function(app){
 	app.post('/post',checkLogin);
 	app.post('/post', function(req, res){
 		var currentUser = req.session.user,
-			post = new Post(currentUser.name, req.body.title, req.body.brief, req.body.post);
+			post = new Post(currentUser.name, req.body.title, req.body.brief, req.body.tags, req.body.post);
 		post.save(function(err){
 			if(err){
 				req.flash('error', err);
@@ -166,65 +166,49 @@ module.exports = function(app){
 					return res.redirect('/');
 				}
 				//查询并返回该用户的所有文章
-				Post.getAll(user.name, function(err, posts){
-					if(err){
-						req.flash('error', err);
-						return res.redirect('/');
-					}
-				    res.render('blog', { 
-					  	title: user.name+'的文章',
-					  	user_name: user.name,
-					  	user: req.session.user,
-					  	posts: posts,
-					  	success: req.flash('success').toString(),
-					  	error: req.flash('error').toString()
-				    });
-				});
+                Page.pei(req, res, user.name, 10, 'posts', function(err, page){
+                    res.render('blog', {
+                        title: user.name+'的文章',
+                        user: req.session.user,
+                        user_name: user.name,
+                        posts: page.posts,
+                        total: page.total,
+                        page: page.page,
+                        success: req.flash('success').toString(),
+                        error: req.flash('error').toString()
+                    });
+                });
 			});
 		}else{
-			Post.getAll(null, function(err, posts){
-				if(err){
-					posts = [];
-				}
-			    res.render('blog', { 
-				  	title: '文章列表',
-					user_name: '',
-				  	user: req.session.user,
-				  	posts: posts,
-				  	success: req.flash('success').toString(),
-				  	error: req.flash('error').toString()
-			    });
-			});
+            //查询所有文章
+            Page.pei(req, res, user.name, 10, 'posts', function(err, page){
+                res.render('blog', {
+                    title: '文章列表',
+                    user: req.session.user,
+                    user_name: '',
+                    posts: page.posts,
+                    total: page.total,
+                    page: page.page,
+                    success: req.flash('success').toString(),
+                    error: req.flash('error').toString()
+                });
+            });
 		}
 	});
 
     //所有文章列表
 	app.get('/blog/index', function(req, res){
-        if(req.query.page){
-            var page = req.query.page;
-        }else{
-           var page = 1;
-        }
-        var post = new Page(null, page, 10, 'posts');
-        post.find(function(err, posts, total){
-            if(err){
-				req.flash('error', err);
-				return res.redirect('404');
-            }
-            console.log(posts.length)
-            if(posts.length==0 && page!=1){
-                res.redirect('/blog/index?page=1');
-            }
-		    res.render('blog', {
-			  	title: 'Great Taste',
-			  	user: req.session.user,
+        Page.pei(req, res, null, 10, 'posts', function(err, page){
+            res.render('blog', {
+                title: 'Great Taste',
+                user: req.session.user,
                 user_name: '',
-			  	posts: posts,
-                total: Math.ceil(total/10),
-                page: parseInt(page),
-			  	success: req.flash('success').toString(),
-			  	error: req.flash('error').toString()
-		    });
+                posts: page.posts,
+                total: page.total,
+                page: page.page,
+                success: req.flash('success').toString(),
+                error: req.flash('error').toString()
+            });
         });
     })
 
@@ -237,20 +221,18 @@ module.exports = function(app){
 				return res.redirect('/blog');
 			}
 			//查询并返回该用户的所有文章
-			Post.getAll(user.name, function(err, posts){
-				if(err){
-					req.flash('error', err);
-					return res.redirect('/');
-				}
-			    res.render('blog', { 
-				  	title: user.name+'的文章',
-				  	user_name: user.name,
-				  	user: req.session.user,
-				  	posts: posts,
-				  	success: req.flash('success').toString(),
-				  	error: req.flash('error').toString()
-			    });
-			});
+            Page.pei(req, res, user.name, 10, 'posts', function(err, page){
+                res.render('blog', {
+                    title: user.name+'的文章',
+                    user: req.session.user,
+                    user_name: user.name,
+                    posts: page.posts,
+                    total: page.total,
+                    page: page.page,
+                    success: req.flash('success').toString(),
+                    error: req.flash('error').toString()
+                });
+            });
 		});		
 	});
 	
@@ -337,7 +319,7 @@ module.exports = function(app){
 		if(currentUser.name != req.params.name){
 			return res.redirect('/blog');
 		}
-		Post.update(currentUser.name, req.params.day, req.params.title, req.body.brief, req.body.post, function(err){
+		Post.update(currentUser.name, req.params.day, req.params.title, req.body.brief, req.body.tags, req.body.post, function(err){
 			var url = encodeURI('/blog');
 			if(err){
 				req.flash('error', err);

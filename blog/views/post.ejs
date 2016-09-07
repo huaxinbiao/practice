@@ -21,7 +21,8 @@
 					<h3><% if(post){ %> <%= 'Edit' %> <% }else{ %><%= 'Publish' %><% } %> an <span>Article</span></h3>
 					<form method="post">
 						<input type="text" name="title" placeholder="title" value="<%= post.title %>" <% if(post){ %> <%= 'disabled="disabled"' %> <% } %> required=" ">
-						<input type="text" name="brief" placeholder="brief introduction" value="<%= post.brief %>" required=" ">
+						<input type="text" name="brief" placeholder="brief introduction" value="<%= post.brief %>" required=" " style="margin-bottom:1.5em">
+						<input type="text" name="tags" placeholder="Fill in the label, multiple to ',' segmentation" value="<%= post.tags %>" required=" ">
 						<div class="clearfix"> </div>
 						<textarea name="post" placeholder="Give me your opinion." required=" " style="height: 236px;"><%= post.post %></textarea>
 						<input type="submit" value="Submit">

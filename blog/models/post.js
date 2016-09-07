@@ -1,9 +1,10 @@
 var mongodb = require('./db');
 
-function Post(name, title, brief, post){
+function Post(name, title, brief, tags, post){
 	this.name = name;
 	this.title = title;
 	this.brief = brief;
+    this.tags = tags.split(',');
 	this.post = post;
 };
 
@@ -27,6 +28,7 @@ Post.prototype.save = function(callback){
 		time: time,
 		title: this.title,
 		brief: this.brief,
+		tags: this.tags,
 		post: this.post
 	};
 	//打开数据库
@@ -116,8 +118,9 @@ Post.getOne = function(name, day, title, callback){
 };
 
 //编辑一篇文章
-Post.update = function(name, day, title, brief, post, callback){
+Post.update = function(name, day, title, brief, tags, post, callback){
 	//打开数据库
+    tags = tags.split(',');
 	mongodb.open(function(err, db){
 		if(err){
 			return callback(err);
@@ -134,7 +137,7 @@ Post.update = function(name, day, title, brief, post, callback){
 				"time.day": day,
 				"title": title
 			}, {
-				$set: {brief: brief, post: post}
+				$set: {brief: brief, tags: tags, post: post}
 			}, function(err){
 				mongodb.close();
 				if(err){

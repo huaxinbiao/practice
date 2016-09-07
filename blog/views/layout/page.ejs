@@ -1,0 +1,40 @@
+<div style="text-align: center;">
+    <ul class="pagination">
+            <li<% if(page == 1){ %> class="disabled"<% } %>><a href="<% if(page != 1){ %><%= '/blog/index?page='+(page-1) %><% } %>" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+            <%
+                switch(page){
+                case 1:
+                  var nextall = page+5;
+                  var pverall = 1;
+                  break;
+                case 2:
+                  var nextall = page+4;
+                  var pverall = 1;
+                  break;
+                case total-1:
+                  var nextall = page+2;
+                  var pverall = page-3;
+                  break;
+                case total-2:
+                  var nextall = page+3;
+                  var pverall = page-2;
+                  break;
+                case total:
+                  var nextall = page+1;
+                  var pverall = page-4;
+                  break;
+                default:
+                  var nextall = page+3;
+                  var pverall = page-2;
+                };
+                if(total<5){
+                  nextall = total+1;
+                  pverall = 1;
+                }
+                for(var i=pverall; i<nextall; i++){
+            %>
+                <li<% if(page == i){ %> class="active"<% } %>><a href="<% if(page == i){ %>javascript:;<% }else{ %><%= '/blog/index?page='+i %><% } %>"><%= i %><% if(page == i){ %> <span class="sr-only">(current)</span><% } %></a></li>
+            <% } %>
+            <li<% if(page == total){ %> class="disabled"<% } %>><a href="<% if(page != total){ %><%= '/blog/index?page='+(parseInt(page)+1) %><% } %>" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+    </ul>
+</div>

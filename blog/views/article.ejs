@@ -21,10 +21,14 @@
 					<h3><%= post.brief %></h3>
 					<div class="single-left">
 						<p><%= post.name %> <span><%= post.time.minute %></span></p>
+                        <p>
+                            <% for(i in post.tags){ %>
+                            <a href="/blog/index?tag=<%= post.tags[i] %>"><span class="label label-info"><%= post.tags[i] %></span></a>
+                            <% } %>
+                        </p>
 					</div>
 					<div class="clearfix"> </div>
 					<p class="tortor" style="margin-top: 0;min-height: 300px;"><%= post.post %></p>
-					
 				</div>
 				<div class="three-com">
                     <% if(post.comments){ %>
