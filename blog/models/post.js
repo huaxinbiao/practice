@@ -75,7 +75,10 @@ Post.getAll = function(name, callback){
 				query.name = name;
 			}
 			//根据query对象查询信息
-			collection.find(query).sort({
+			collection.find(query,{
+                "title": 1,
+                "time": 1
+            }).sort({
 				time: -1
 			}).toArray(function(err, docs){
 				mongodb.close();

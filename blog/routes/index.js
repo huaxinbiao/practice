@@ -15,13 +15,24 @@ module.exports = function(app){
 				req.flash('error', err);
 				return res.redirect('404');
             }
-		    res.render('index', { 
-			  	title: 'Great Taste',
-			  	user: req.session.user,
-			  	posts: posts,
-			  	success: req.flash('success').toString(),
-			  	error: req.flash('error').toString()
-		    });
+            var name = null;
+            if(req.session.user){
+                name = req.session.user.name;
+            }
+            Post.getAll(name, function(err, archive){
+                if(err){
+                    req.flash('error', err);
+                    return res.redirect('404');
+                }
+                res.render('index', {
+                    title: 'Great Taste',
+                    user: req.session.user,
+                    posts: posts,
+                    archive: archive,
+                    success: req.flash('success').toString(),
+                    error: req.flash('error').toString()
+                });
+            })
         });
 	});
 
