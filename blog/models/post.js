@@ -77,7 +77,8 @@ Post.getAll = function(name, callback){
 			//根据query对象查询信息
 			collection.find(query,{
                 "title": 1,
-                "time": 1
+                "time": 1,
+                "name": 1
             }).sort({
 				time: -1
 			}).toArray(function(err, docs){

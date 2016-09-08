@@ -7,6 +7,20 @@ var crypto = require('crypto'),//加密密码
 /* GET home page. */
 module.exports = function(app){
 	//首页
+    app.use(function(req, res, next){
+        var name = null;
+        if(req.session.user){
+            name = req.session.user.name;
+        }
+        Post.getAll(name, function(err, archive){
+            if(err){
+                req.flash('error', err);
+                return res.redirect('404');
+            }
+            app.set("archive",archive)
+            next();
+        })
+    })
 	//输出博客文章列表
 	app.get('/', function(req, res) {
         var post = new Page(null, 1, 6, 'posts');
@@ -15,24 +29,14 @@ module.exports = function(app){
 				req.flash('error', err);
 				return res.redirect('404');
             }
-            var name = null;
-            if(req.session.user){
-                name = req.session.user.name;
-            }
-            Post.getAll(name, function(err, archive){
-                if(err){
-                    req.flash('error', err);
-                    return res.redirect('404');
-                }
-                res.render('index', {
-                    title: 'Great Taste',
-                    user: req.session.user,
-                    posts: posts,
-                    archive: archive,
-                    success: req.flash('success').toString(),
-                    error: req.flash('error').toString()
-                });
-            })
+            res.render('index', {
+                title: 'Great Taste',
+                user: req.session.user,
+                posts: posts,
+                archive: app.get("archive"),
+                success: req.flash('success').toString(),
+                error: req.flash('error').toString()
+            });
         });
 	});
 
@@ -46,6 +50,7 @@ module.exports = function(app){
 	  res.render('reg', { 
 	  	title: '注册',
 	  	user: req.session.user,
+        archive: app.get("archive"),
 	  	success: req.flash('success').toString(),
 	  	error: req.flash('error').toString()
 	  });
@@ -104,6 +109,7 @@ module.exports = function(app){
 	  res.render('login', { 
 	  	title: '登录',
 	  	user: req.session.user,
+        archive: app.get("archive"),
 	  	success: req.flash('success').toString(),
 	  	error: req.flash('error').toString()
 	  });
@@ -145,6 +151,7 @@ module.exports = function(app){
 	  	title: '发表文章',
 	  	user: req.session.user,
 	  	post: '',
+        archive: app.get("archive"),
 	  	success: req.flash('success').toString(),
 	  	error: req.flash('error').toString()
 	  });
@@ -185,6 +192,7 @@ module.exports = function(app){
                         posts: page.posts,
                         total: page.total,
                         page: page.page,
+                        archive: app.get("archive"),
                         success: req.flash('success').toString(),
                         error: req.flash('error').toString()
                     });
@@ -200,6 +208,7 @@ module.exports = function(app){
                     posts: page.posts,
                     total: page.total,
                     page: page.page,
+                    archive: app.get("archive"),
                     success: req.flash('success').toString(),
                     error: req.flash('error').toString()
                 });
@@ -217,6 +226,7 @@ module.exports = function(app){
                 posts: page.posts,
                 total: page.total,
                 page: page.page,
+                archive: app.get("archive"),
                 success: req.flash('success').toString(),
                 error: req.flash('error').toString()
             });
@@ -240,6 +250,7 @@ module.exports = function(app){
                     posts: page.posts,
                     total: page.total,
                     page: page.page,
+                    archive: app.get("archive"),
                     success: req.flash('success').toString(),
                     error: req.flash('error').toString()
                 });
@@ -258,6 +269,7 @@ module.exports = function(app){
 				title: req.params.title,
 				post: post,
 				user: req.session.user,
+                archive: app.get("archive"),
 			  	success: req.flash('success').toString(),
 			  	error: req.flash('error').toString()
 			});
@@ -317,6 +329,7 @@ module.exports = function(app){
 				title: req.params.title,
 				post: post,
 				user: req.session.user,
+                archive: app.get("archive"),
 			  	success: req.flash('success').toString(),
 			  	error: req.flash('error').toString()
 			});

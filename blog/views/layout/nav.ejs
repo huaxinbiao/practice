@@ -39,37 +39,76 @@
 	<div class="latest-news">
 		<h2>Latest News</h2>
         <style>
-            .panel-month{display:none}
-            .panel-month a{display:block;padding-left:10px;line-height:26px;}
+            .panel-heading{margin-bottom:10px}
+            .panel-month{cursor:pointer; background:#f1f1f1;margin-left:8px;padding-left:8px}
+            .panel-collapse>h5{line-height:30px;margin:10px 0;}
+            .panel-collapse>a{display:block;padding-left:10px;line-height:26px; background: #f8f8f8; color: #666;margin-bottom:10px;margin-left:16px;padding-left:8px}
         </style>
 		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
-
-          <% archive.forEach(function(archive, index){ %>
-          <div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="heading-<%= index %>">
+        <div class="panel panel-default">
+            <%
+                var lastArchive = 0;
+                var lastMonth = 0;
+                var t=0,p=0;
+                archive.forEach(function(archive, index){
+            %>
+            <% if(lastArchive != archive.time.year){
+                lastArchive = archive.time.year;
+                t++;
+            %>
+			<div class="panel-heading" data-ff="<%= t %>">
 			  <h4 class="panel-title">
-				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-<%= index %>" aria-expanded="false" aria-controls="collapse-<%= index %>">
+				<a data-parent="#accordion" href="javascript:;">
 				  <%= archive.time.year %>
 				</a>
 			  </h4>
 			</div>
-			<div id="collapse-<%= index %>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-<%= index %>">
-			  <div class="panel-body">
-                  <h5><%= archive.time.month %>月</h5>
-                  <div class="panel-month">
-                      <a href="#"><%= archive.title %></a>
-                  </div>
-			  </div>
-			</div>
-		  </div>
-          <% }) %>
+            <% } %>
+            <% if(lastMonth != archive.time.month){
+              lastMonth = archive.time.month;
+              p++;
+            %>
+                <div class="panel-collapse panel-month collapse month<%= t %>" data-ff="<%= p %>">
+                      <h5><%= archive.time.month %>月</h5>
+                </div>
+            <% } %>
+               <div class="panel-collapse collapse title<%= p %>">
+                  <a href="/blog/<%= archive.name %>/<%= archive.time.day %>/<%= archive.title %>"><%= archive.title %></a>
+               </div>
+            <% }) %>
 
 
+        </div>
 		</div>
 		<div class="join">
 			<a href="single.html">Learn More</a>
 		</div>
+        <script>
+            $('.panel-heading').click(function(){
+                var k = $(this).attr('data-a');
+                var i = 'month' + $(this).attr('data-ff');
+                if(k==1){
+                    $('.'+i).hide();
+                    $(this).attr('data-a','0');
+                }else{
+                    $('.'+i).show();
+                    $(this).attr('data-a','1');
+                }
+            })
+            $('.panel-month').click(function(){
+                var k = $(this).attr('data-a');
+                var i = 'title' + $(this).attr('data-ff');
+                if(k==1){
+                    $('.'+i).hide();
+                    $(this).attr('data-a','0');
+                }else{
+                    $('.'+i).show();
+                    $(this).attr('data-a','1');
+                }
+            })
+        </script>
 		<h3>Benefits</h3>
 		<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
 	</div>
+
 </div>
