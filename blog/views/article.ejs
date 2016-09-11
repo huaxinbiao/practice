@@ -20,7 +20,7 @@
 				<div class="single">
 					<h3><%= post.brief %></h3>
 					<div class="single-left">
-						<p><%= post.name %> <span><%= post.time.minute %></span></p>
+						<p><%= post.name %> <span><%= post.time.minute %></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>访问：<%= post.pv %></span></p>
                         <p>
                             <% for(i in post.tags){ %>
                             <a href="/blog/index?tag=<%= post.tags[i] %>"><span class="label label-info"><%= post.tags[i] %></span></a>
