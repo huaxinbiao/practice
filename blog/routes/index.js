@@ -17,7 +17,7 @@ module.exports = function(app){
                 req.flash('error', err);
                 return res.redirect('404');
             }
-            app.set("archive",archive)
+            app.set("archive",archive);
             next();
         })
     })
@@ -200,7 +200,7 @@ module.exports = function(app){
 			});
 		}else{
             //查询所有文章
-            Page.pei(req, res, user.name, 10, 'posts', function(err, page){
+            Page.pei(req, res, null, 10, 'posts', function(err, page){
                 res.render('blog', {
                     title: '文章列表',
                     user: req.session.user,

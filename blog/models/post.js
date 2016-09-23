@@ -112,11 +112,26 @@ Post.getOne = function(name, day, title, callback){
 				"time.day": day,
 				"title": title
 			}, function(err, doc){
-				mongodb.close();
 				if(err){
+				    mongodb.close();
 					return callback(err);
 				}
-				callback(null,doc);
+                if(doc){
+                    //更新文章内容
+                    collection.update({
+                        "name": name,
+                        "time.day": day,
+                        "title": title
+                    }, {
+                        $inc: {"pv": 1}
+                    }, function(err){
+                        mongodb.close();
+                        if(err){
+                            return callback(err);
+                        }
+                    });
+                    callback(null,doc);
+                }
 			});
 		});
 	});
