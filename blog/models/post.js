@@ -92,6 +92,7 @@ Post.getAll = function(name, callback){
 	});
 };
 
+
 //获取一篇文章
 Post.getOne = function(name, day, title, callback){
 	//打开数据库
