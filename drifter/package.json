@@ -6,6 +6,7 @@
   "dependencies": {
     "accepts": "^1.2.13",
     "array-flatten": "^1.1.1",
+    "body-parser": "~1.15.1",
     "content-disposition": "^0.5.1",
     "content-type": "^1.0.2",
     "cookie": "^0.1.5",
@@ -50,7 +51,9 @@
     "unpipe": "^1.0.0",
     "vary": "^1.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+      "request": "*"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
