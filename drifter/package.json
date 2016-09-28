@@ -4,14 +4,11 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-<<<<<<< HEAD
-=======
     "accepts": "^1.2.13",
     "array-flatten": "^1.1.1",
     "body-parser": "~1.15.1",
     "content-disposition": "^0.5.1",
     "content-type": "^1.0.2",
->>>>>>> origin/master
     "cookie": "^0.1.5",
     "cookie-signature": "^1.0.6",
     "debug": "^2.2.0",
