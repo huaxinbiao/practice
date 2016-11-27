@@ -1,0 +1,23 @@
+build webpack构建过程的设置文件，包括调试和发布版本以及一些工具函数 
+
+config 这里是webpack-dev-server的一些设定，关于webpack和webpack-dev-server的设定，详见官方文档 
+
+src 项目的源文件所在，按照你需要的样子写js和html文件，webpack将打包成浏览器可识别的，如ES6 
+
+static 这里是存放静态资源的地方，在build之后会生成dist文件夹，这个文件夹中的文件会原封不动放进去 
+
+.babelrc webpack插件babel的设置 
+
+.editorconfig 这是atom编辑器生成的配置文件，在各个项目中可以自由配置 
+
+.eslintignore 使用eslint检测代码是否符合规则的忽略目录，用于eslint设置 
+
+.gitignore 使用Git版本管理时需要忽略的目录，用于git设置 
+
+index.html 项目生成后的入口页面，因为vue默认是使用单页面的，所以在webpack中同时也只有这一个入口 
+
+package.json nodejs的配置 
+
+README.md 说明文件，其中说明了使用vue-cli创建项目之后应该怎么做 
+
+dist build之后生成的目录，其中存放webpack打包之后的结果，webpack中需要指定build规则 
