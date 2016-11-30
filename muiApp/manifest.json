@@ -189,5 +189,27 @@
 				}
 			}
 		}
+	},
+	"dependencies": {
+		"pages": {
+			"index.html": {
+				"resources": [
+					"src/components/index.js",
+					"static/js/mui.min.js",
+					"static/js/vue.js",
+					"static/css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			}
+		},
+		"idle": {
+			"resources": [
+				"static/fonts/mui.ttf",
+				"static/js/vue.min.js",
+				"static/js/mui.js",
+				"static/css/mui.css"
+			]
+		}
 	}
 }
