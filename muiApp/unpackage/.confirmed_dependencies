@@ -1,10 +1,10 @@
 {
-	"index.html": {
-		"resources": [
-			"src/components/index.js",
-			"static/js/mui.min.js",
-			"static/js/vue.js",
-			"static/css/mui.min.css"
-		]
-	}
+  "index.html": {
+    "resources": [
+      "src/components/index.js",
+      "static/js/mui.min.js",
+      "static/js/vue.js",
+      "static/css/mui.min.css"
+    ]
+  }
 }
