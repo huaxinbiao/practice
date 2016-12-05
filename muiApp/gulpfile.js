@@ -38,7 +38,7 @@ gulp.task('testLess', function () {
         }))
     	//  这里加一节pipe，做一个minifycss操作
     	.pipe(minifycss()) //压缩css
-    	.pipe(gulp.dest('dist'));
+    	.pipe(gulp.dest('src'));
 });
 
 //使用gulp-uglify压缩javascript文件，减小文件大小。

@@ -3,34 +3,49 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title></title>
+    <title>你画我猜</title>
     <link href="../../../static/css/mui.min.css" rel="stylesheet"/>
+    <link href="../../public/Hui.css" rel="stylesheet"/>
     <script src="../../../static/js/mui.min.js"></script>
-    <script type="./text/javascript" charset="utf-8">
-      	mui.init();
-    </script>
     <script src="../../../static/js/vue.js"></script>
-    <script src="../../components/index.js"></script>
+    <script src="../../components/header.js"></script>
+    <script src="../../components/nav.js"></script>
+    <script src="../../components/left.js"></script>
 <!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
 </head>
 <body>
-	<div id="example">
-	  <my-component></my-component>  
-	  <my-component1></my-component1>
-	</div>
+   <div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+    <!--侧滑菜单部分-->
+    <io-left></io-left>
+    <!--主界面部分-->
+    <div class="mui-inner-wrap">
+        <io-header></io-header>
+        <io-nav></io-nav>
+        <div class="mui-content mui-scroll-wrapper">
+            
+        </div>
+        <!-- off-canvas backdrop -->
+        <div class="mui-off-canvas-backdrop"></div>
+    </div>
+</div>
+   <!--Vue-->
 	<script>
-	// 创建根实例
-	new Vue({
-	  el: '#example',
-	  components: {
-	    // <my-component> 将只在父模板可用
-	    'my-component1': Child
-	  }
-	})
-    /*var socket = io.connect('http://192.168.1.106:3000');
-    socket.on('connected', function(){
-        alert('连上了！');
-    })*/
+        // 创建根实例
+        new Vue({
+            el: '#offCanvasWrapper',
+            mounted: function() {
+                mui.init();
+            },
+            methods: {
+                tab: function (){
+                    console.log(15)
+                }
+            }
+        })
+        /*var socket = io.connect('http://192.168.1.106:3000');
+        socket.on('connected', function(){
+            alert('连上了！');
+        })*/
 	</script>
 </body>
 </html>
