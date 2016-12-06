@@ -9,10 +9,10 @@ Vue.component('io-nav', {
     data: function(){
         return {
             tabbar:[
-                {icon:'mui-icon-home',title:'首页',url: 'home.html'},
-                {icon:'mui-icon-phone',title:'电话',url: 'phone.html'},
-                {icon:'mui-icon-email',title:'邮件',url: 'email.html'},
-                {icon:'mui-icon-gear',title:'设置',url: 'gear.html'}
+                {icon:'mui-icon-starhalf',title:'游戏',url: 'home.html'},
+                {icon:'mui-icon-paperplane',title:'房间',url: 'phone.html'},
+                {icon:'mui-icon-chatbubble',title:'消息',url: 'email.html'},
+                {icon:'mui-icon-navigate',title:'发现',url: 'gear.html'}
             ]
         }
     }
