@@ -4,7 +4,7 @@ Vue.component('io-header', {
         template: '<header class="mui-bar mui-bar-nav">'+
                         '<a class="mui-icon mui-action-menu mui-icon-bars mui-pull-left" v-on:tap="tab"></a>'+
 //                        '<a id="info" class="mui-icon mui-icon-info-filled mui-pull-right" style="color: #999;"></a>'+
-                        '<h1 class="mui-title">Hello mui</h1>'+
+//                        '<h1 class="mui-title">Hello mui</h1>'+
                     '</header>',
         methods: {
             tab: function (){
