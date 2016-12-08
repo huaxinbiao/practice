@@ -28,7 +28,6 @@ Vue.component('io-nav', {
         }
         // 扩展API准备完成后要执行的操作
         function plusReady(){
-        	console.log(1500000)
         	addEventTest();
         }
     }

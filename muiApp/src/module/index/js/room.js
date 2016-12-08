@@ -1,6 +1,6 @@
 //首页
-Vue.component('io-index', {
-    template: `<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+Vue.component('io-room', {
+    template: `<div id="room" class="mui-content mui-scroll-wrapper">
     				<div class="mui-scroll">
 			            <div class="Hui-indexbar">
 			                <div><img src="../../public/images/default.jpg"></div>
@@ -104,7 +104,7 @@ Vue.component('io-index', {
 		        </div>`,
     mounted(){
     	//主界面和侧滑菜单界面均支持区域滚动；
-        mui('#offCanvasContentScroll').scroll({
+        mui('#room').scroll({
         	 indicators: false, //是否显示滚动条
 			 deceleration:0.0005, //阻尼系数,系数越小滑动越灵敏
 			 bounce: false, //是否启用回弹

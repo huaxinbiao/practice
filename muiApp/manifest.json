@@ -224,7 +224,9 @@
 					"src/public/images/left-bg.jpg",
 					"src/components/nav.js",
 					"static/css/mui.min.css",
-					"src/module/index/js/index.js"
+					"src/module/index/js/index.js",
+					"src/module/index/css/index.css",
+					"index.html"
 				],
 				"refer": [],
 				"priority": 0
