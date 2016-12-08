@@ -19,6 +19,30 @@ Vue.component('io-nav', {
         }
     },
     mounted() {
-        console.log(this.isActive);
+    	// H5+
+        // 扩展API是否准备好，如果没有则监听“plusready"事件
+        if(window.plus){
+            plusReady();
+        }else{ 
+            document.addEventListener( "plusready", plusReady, false );
+        }
+        // 扩展API准备完成后要执行的操作
+        function plusReady(){
+        	console.log(1500000)
+        	addEventTest();
+        }
     }
 });
+function addEventTest(){
+	// 隐藏滚动条
+	plus.webview.currentWebview().setStyle({scrollIndicator:'none'});
+	// Android处理返回键,点击一下退到后台
+	plus.key.addEventListener("backbutton",function(){
+		var main = plus.android.runtimeMainActivity();
+		main.moveTaskToBack(false);
+	},false);
+	//改写mui.back默认绑定的返回
+    mui.back = function(){
+		return
+    }
+}

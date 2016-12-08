@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>你画我猜</title>
+    <link href="static/css/mui.min.css" rel="stylesheet"/>
+    <link href="src/public/css/Hui.css" rel="stylesheet"/>
+    <script src="static/js/mui.min.js"></script>
+    <script src="static/js/vue.js"></script>
+    <!--公共组件-->
+    <script src="src/components/header.js"></script>
+    <script src="src/components/nav.js"></script>
+    <script src="src/components/left.js"></script>
+<!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
+</head>
+<body>
+	<style>.mui-iframe-wrapper,#index{z-index: -1;}</style>
+   <div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+    <!--侧滑菜单部分-->
+    <io-left></io-left>
+    <!--主界面部分-->
+    <div class="mui-inner-wrap" style="z-index: 998;">
+        <io-header></io-header>
+        <io-nav v-bind:is-Active="isActive"></io-nav>
+        
+        <div class="mui-off-canvas-backdrop"></div>
+    </div>
+</div>
+   <!--Vue-->
+	<script>
+        // 创建根实例
+        new Vue({
+            el: '#offCanvasWrapper',
+            data(){
+              return {
+                  isActive:'0'
+              }  
+            },
+            mounted: function() {
+	            //取消浏览器的所有事件，使得active的样式在手机上正常生效
+				document.addEventListener('touchstart',function(){
+				    return false;
+				},true);
+                mui.init({
+                	subpages:[{
+				      url:"src/module/index/index.html",//子页面HTML地址，支持本地地址和网络地址
+				      id:"index",//子页面标志
+				      styles:{
+				        top:"44px",//子页面顶部位置
+				        bottom:"50px",//子页面底部位置
+				        zindex:-1,
+				      },
+				      extras:{}//额外扩展参数
+				    }]
+                });
+                /*var socket = io.connect('http://192.168.1.106:3000');
+                socket.on('connected', function(){
+                    alert('连上了！');
+                })*/
+            },
+            methods: {
+                tab: function (){
+                    console.log(15)
+                }
+            }
+        })
+	</script>
+</body>
+</html>

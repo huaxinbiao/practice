@@ -13,41 +13,21 @@
     <script src="../../components/nav.js"></script>
     <script src="../../components/left.js"></script>
     <!--当前页面-->
-    <script src="../../components/left.js"></script>
+    <script src="js/index.js"></script>
 <!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
 </head>
 <body>
    <div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
-    <!--侧滑菜单部分-->
-    <io-left></io-left>
-    <!--主界面部分-->
-    <div class="mui-inner-wrap">
-        <io-header></io-header>
-        <io-nav v-bind:is-Active="isActive"></io-nav>
-        <div class="mui-content mui-scroll-wrapper">
-            <div>
-                <div><img src="../../public/images/default.jpg"></div>
-                <div>
-                    <h2>袖手旁观</h2>
-                    <p>我就试试介绍能有多长。。。</p>
-                    <span>积分：1000</span>
-                </div>
-            </div>
-            <div>
-                <div>
-                    <div><img src=""></div>
-                    <div>
-                        <h3>你画我猜</h3>
-                        <span>涂鸦猜谜才艺展示</span>
-                    </div>
-                    <div><a href="javascript:;">开始</a></div>
-                </div>
-            </div>
-        </div>
-        <!-- off-canvas backdrop -->
-        <div class="mui-off-canvas-backdrop"></div>
-    </div>
-</div>
+	    <!--侧滑菜单部分-->
+	    <io-left></io-left>
+	    <!--主界面部分-->
+	    <div class="mui-inner-wrap">
+	        <io-header></io-header>
+	        <io-nav v-bind:is-Active="isActive"></io-nav>
+	        <io-index></io-index>
+	        <div class="mui-off-canvas-backdrop"></div>
+	    </div>
+	</div>
    <!--Vue-->
 	<script>
         // 创建根实例
