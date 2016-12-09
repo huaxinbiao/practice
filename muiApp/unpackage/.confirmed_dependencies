@@ -1,40 +1,41 @@
 {
-  "index.html": {
-    "resources": [
-      "src/components/index.js",
-      "static/js/mui.min.js",
-      "static/js/vue.js",
-      "static/css/mui.min.css",
-      "src/public/images/default.jpg",
-      "src/components/header.js",
-      "static/fonts/mui.ttf",
-      "src/components/left.js",
-      "src/public/css/Hui.css",
-      "src/public/images/left-bg.jpg",
-      "src/components/nav.js",
-      "src/module/index/index.html"
-    ],
-    "refer": [
-      "src/module/index/index.html"
-    ]
-  },
-  "src/module/index/index.html": {
-    "resources": [
-      "static/js/mui.min.js",
-      "src/public/images/default.jpg",
-      "src/components/header.js",
-      "src/public/images/icon1.png",
-      "static/fonts/mui.ttf",
-      "src/components/left.js",
-      "static/js/vue.js",
-      "src/public/css/Hui.css",
-      "src/public/images/left-bg.jpg",
-      "src/components/nav.js",
-      "static/css/mui.min.css",
-      "src/module/index/js/index.js",
-      "src/module/index/css/index.css",
-      "index.html"
-    ],
-    "refer": []
-  }
+	"index.html": {
+		"resources": [
+			"src/components/index.js",
+			"static/js/mui.min.js",
+			"static/js/vue.js",
+			"static/css/mui.min.css",
+			"src/public/images/default.jpg",
+			"src/components/header.js",
+			"static/fonts/mui.ttf",
+			"src/components/left.js",
+			"src/public/css/Hui.css",
+			"src/public/images/left-bg.jpg",
+			"src/components/nav.js",
+			"src/module/index/index.html"
+		],
+		"refer": [
+			"src/module/index/index.html"
+		]
+	},
+	"src/module/index/index.html": {
+		"resources": [
+			"static/js/mui.min.js",
+			"src/public/images/default.jpg",
+			"src/components/header.js",
+			"src/public/images/icon1.png",
+			"static/fonts/mui.ttf",
+			"src/components/left.js",
+			"static/js/vue.js",
+			"src/public/css/Hui.css",
+			"src/public/images/left-bg.jpg",
+			"src/components/nav.js",
+			"static/css/mui.min.css",
+			"src/module/index/js/index.js",
+			"src/module/index/css/index.css",
+			"index.html",
+			"src/module/index/js/room.js"
+		],
+		"refer": []
+	}
 }

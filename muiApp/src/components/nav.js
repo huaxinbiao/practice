@@ -1,12 +1,12 @@
 
 Vue.component('io-nav', {
     template: `<nav class="mui-bar mui-bar-tab">
-                    <a v-for="(item, index) in tabbar" class="mui-tab-item" v-bind:class="{'mui-active': Active==index}" href="javascript:;">
+                    <a v-for="(item, index) in tabbar" class="mui-tab-item" v-bind:class="{'mui-active': Active==index}" v-on:tap="navtap(index,item.title)" href="javascript:;">
                         <span class="mui-icon" v-bind:class="item.icon"></span>
                         <span class="mui-tab-label">{{item.title}} </span>
                     </a>
                 </nav>`,
-    props: ['isActive'],
+    props: ['isActive'],//接收父组件传值
     data: function(){
         return {
             tabbar:[
@@ -30,6 +30,17 @@ Vue.component('io-nav', {
         function plusReady(){
         	addEventTest();
         }
+    },
+    methods:{
+    	navtap:function(index,title){
+    		//向父组件传递数据
+    		index = {
+    			'index':index,
+    			'title':title
+    		}
+    		console.log(index);
+    		this.$emit('navshow',index);
+    	}
     }
 });
 function addEventTest(){

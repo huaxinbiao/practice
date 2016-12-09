@@ -226,7 +226,8 @@
 					"static/css/mui.min.css",
 					"src/module/index/js/index.js",
 					"src/module/index/css/index.css",
-					"index.html"
+					"index.html",
+					"src/module/index/js/room.js"
 				],
 				"refer": [],
 				"priority": 0

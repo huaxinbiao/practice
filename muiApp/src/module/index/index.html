@@ -24,9 +24,10 @@
 	    <io-left></io-left>
 	    <!--主界面部分-->
 	    <div class="mui-inner-wrap">
-	        <io-header></io-header>
-	        <io-nav v-bind:is-Active="isActive"></io-nav>
-	        <io-index></io-index>
+	        <io-header v-bind:is-Navshow="isNavshow"></io-header>
+	        <io-nav v-on:navshow="navshowp" v-bind:is-Active="isActive"></io-nav>
+	        <io-index v-show="isNavshow.index == 0 || isNavshow==''"></io-index>
+	        <io-room v-show="isNavshow.index == 1"></io-room>
 	        <div class="mui-off-canvas-backdrop"></div>
 	    </div>
 	</div>
@@ -37,7 +38,8 @@
             el: '#offCanvasWrapper',
             data(){
               return {
-                  isActive:'0'
+                  isActive:'0',
+                  isNavshow:''
               }  
             },
             mounted: function() {
@@ -47,10 +49,11 @@
                     alert('连上了！');
                 })*/
             },
-            methods: {
-                tab: function (){
-                    console.log(15)
-                }
+            methods:{
+            	navshowp:function(msg){
+            		//由子组件触发
+            		this.isNavshow = msg;
+            	}
             }
         })
 	</script>
