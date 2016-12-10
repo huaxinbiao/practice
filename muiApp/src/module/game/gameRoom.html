@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>你画我猜</title>
+    <link href="../../../static/css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="../../../static/css/icons-extra.css" />
+    <link href="../../public/css/Hui.css" rel="stylesheet"/>
+    <script src="../../../static/js/mui.min.js"></script>
+    <script src="../../../static/js/vue.js"></script>
+    <!--公共组件-->
+    <!--当前页面-->
+    <script src="js/gHeader.js"></script>
+    <script src="js/gNav.js"></script>
+    <script src="js/room.js"></script>
+    <link href="css/game.css" rel="stylesheet"/>
+<!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
+</head>
+<body>
+	<div id="gameRoom">
+		<io-gheader></io-gheader>
+		<io-gnav></io-gnav>
+		<io-canvas v-on:canvasheight="subpagesTop"></io-canvas>
+	</div>
+    <!--Vue-->
+	<script>
+        // 创建根实例
+        new Vue({
+            el: '#gameRoom',
+            data(){
+              return {
+                  
+              }  
+            },
+            mounted: function() {
+                // 扩展API是否准备好，如果没有则监听“plusready"事件
+		        if(window.plus){
+					createChildPage();
+		        }else{ 
+		            document.addEventListener( "plusready", createChildPage, false );
+		        }
+                /*var socket = io.connect('http://192.168.1.106:3000');
+                socket.on('connected', function(){
+                    alert('连上了！');
+                })*/
+            },
+            methods:{
+            	//事件
+            	subpagesTop:function(msg){
+            		var canvasHeight = msg+68+'px';
+            		//由子组件触发
+	                mui.init({
+	                	subpages:[{
+					      url:'inChat.html',//子页面HTML地址，支持本地地址和网络地址
+					      id:'inChat',//子页面标志
+					      styles:{
+					        top:canvasHeight,//子页面顶部位置
+					        bottom:'50px',//子页面底部位置
+					      }
+					    }]
+	                });
+            	}
+            }
+        })
+        function createChildPage(){
+        	/*//创建子页面
+        	var main = plus.webview.currentWebview();//获取当前view
+			//创建新的Webview窗口
+            var content = plus.webview.create('inChat.html','inChat',{
+                top: '44px',
+                bottom: '50px',
+                bounce: 'vertical'
+            });
+            main.append(content);
+            content.addEventListener('loaded',function(){
+    			var i = 'kjdfkgjkfdjk开发的价格的咖啡馆开发代理机构设立考点附近官方的；lhfdzlfjbgdkzlfbjfkgjhfghkfjdghkfsflkgbjkgfnbk';
+				mui.fire(content,'newsId',{
+				    id:i
+				});
+           });*/
+        }
+	</script>
+</body>
+</html>

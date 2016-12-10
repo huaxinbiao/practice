@@ -3,7 +3,7 @@
 Vue.component('io-header', {
     template: `<header class="mui-bar mui-bar-nav">
                      <a class="mui-icon mui-action-menu mui-icon-bars mui-pull-left" v-on:tap="tab"></a>
-                     <span class="mui-btn-link mui-pull-right Hui-bar-right">创建房间</span>
+                     <span v-show="isNavshow.index == 1" class="mui-btn-link mui-pull-right Hui-bar-right">创建房间</span>
                      <h1 class="mui-title" v-show="isNavshow.index != 0">{{isNavshow.title}}</h1>
                 </header>`,
 	props: ['isNavshow'],//接收父组件传值

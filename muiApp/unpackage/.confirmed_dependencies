@@ -36,6 +36,51 @@
 			"index.html",
 			"src/module/index/js/room.js"
 		],
-		"refer": []
+		"refer": [
+			"src/module/./game/gameRoom.html",
+			"src/module/game/gameRoom.html",
+			"src/module/game/inChat.html"
+		]
+	},
+	"src/module/./game/gameRoom.html": {
+		"resources": [
+			"src/module/game/inChat.html"
+		],
+		"refer": [
+			"src/module/game/inChat.html"
+		]
+	},
+	"src/module/game/gameRoom.html": {
+		"resources": [
+			"static/js/mui.min.js",
+			"src/module/game/css/game.css",
+			"src/module/game/js/gHeader.js",
+			"static/fonts/mui.ttf",
+			"static/js/vue.js",
+			"src/public/css/Hui.css",
+			"static/css/mui.min.css",
+			"src/module/game/js/room.js",
+			"src/module/game/inChat.html",
+			"static/css/icons-extra.css",
+			"static/fonts/mui-icons-extra.ttf",
+			"src/module/game/js/gNav.js",
+			"src/public/images/icon2.png"
+		],
+		"refer": [
+			"src/module/game/inChat.html"
+		]
+	},
+	"src/module/game/inChat.html": {
+		"resources": [
+			"static/js/mui.min.js",
+			"src/module/game/css/game.css",
+			"src/module/game/js/gHeader.js",
+			"static/fonts/mui.ttf",
+			"static/js/vue.js",
+			"src/public/css/Hui.css",
+			"static/css/mui.min.css",
+			"src/module/game/js/room.js",
+			"src/public/images/icon2.png"
+		]
 	}
 }

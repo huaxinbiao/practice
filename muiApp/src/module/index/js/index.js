@@ -17,7 +17,7 @@ Vue.component('io-index', {
 			                        <h3>你画我猜</h3>
 			                        <span>涂鸦猜谜才艺展示</span>
 			                    </div>
-			                    <div><a href="javascript:;">开始</a></div>
+			                    <div><a href="javascript:;" v-on:tap="open()">开始</a></div>
 			                </div>
 			            </div>
 			        </div>
@@ -29,5 +29,21 @@ Vue.component('io-index', {
 			 deceleration:0.0005, //阻尼系数,系数越小滑动越灵敏
 			 bounce: false, //是否启用回弹
         });
+    },
+    methods:{
+    	open:function(){
+    		//打开游戏房间
+	    	mui.openWindow({
+			    url:"../game/gameRoom.html",
+			    id:"gameRoom",
+			    styles:{
+			      top:"0px",//新页面顶部位置
+			      bottom:"0px",//新页面底部位置
+			    },
+			    waiting:{
+			    	autoShow:false
+			    }
+			});
+    	}
     }
 });

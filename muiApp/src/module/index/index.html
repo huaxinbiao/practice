@@ -15,8 +15,6 @@
     <!--当前页面-->
     <script src="js/index.js"></script>
     <script src="js/room.js"></script>
-    <link href="css/index.css" rel="stylesheet"/>
-<!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
 </head>
 <body>
    <div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
@@ -43,11 +41,28 @@
               }  
             },
             mounted: function() {
-                mui.init();
-                /*var socket = io.connect('http://192.168.1.106:3000');
-                socket.on('connected', function(){
-                    alert('连上了！');
-                })*/
+                mui.init(/*{
+                	//预加载
+					preloadPages:[
+					    {
+					        url:"../game/gameRoom.html",
+						    id:"gameRoom",
+						    styles:{
+						      top:"0px",//新页面顶部位置
+						      bottom:"0px",//新页面底部位置
+						    },
+					      	subpages:[{
+							    url:"../game/inChat.html",//子页面HTML地址，支持本地地址和网络地址
+							    id:"inChat",//子页面标志
+							    styles:{
+							        top:"44px",//子页面顶部位置
+							        bottom:"50px",//子页面底部位置
+							    }
+						    }]//预加载页面的子页面
+					    }
+					],
+					preloadLimit:5//预加载窗口数量限制(一旦超出,先进先出)默认不限制
+				}*/);
             },
             methods:{
             	navshowp:function(msg){

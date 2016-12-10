@@ -1,0 +1,120 @@
+@bg-default:#cd3d3d;
+@color-default:#cd3d3d;
+@text-color:#f67575;
+.mui-bar.mui-bar-nav{
+    box-shadow: none;
+    .Hui-icon-left{
+        font-size: 34px;
+        padding: 5px 0;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .Hui-icon-right{
+        display: block;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        right: 10px;
+        padding: 5px 0;
+        font-size: 26px;
+        line-height: 34px;
+    }
+    .Hui-title{
+        line-height: 20px;
+        >p{
+            font-size: 16px;
+            line-height: 22px;
+            padding-top: 5px;
+            color: #fff;
+        }
+        >i{
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 14px;
+        }
+    }
+}
+.gameRoom-canvas{
+    position: fixed;
+    top: 44px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 999;
+    .canvas-bar{
+        color: #fff;
+        background: #999;
+        font-size: 12px;
+        padding: 2px 10px;
+        line-height: 20px;
+        overflow: hidden;
+        >span:last-child{
+            float: right;
+            color: #f5ef3c;
+        }
+    }
+    #gameCanvas{
+        background: #fff;
+        display: block;
+    }
+}
+.Hui-chat-bar{
+    background: #fffcfc;
+    border: none;
+    box-shadow: none;
+    border-top: #E8E8E8 1px solid;
+    box-sizing: content-box;
+    z-index: 9998;
+    .mui-icon{
+        color: #666;
+    }
+    i.Hui-icon-face{
+        background: url(../../../public/images/icon2.png) no-repeat center;
+        background-size: 100%;
+    }
+}
+.sentNews{
+    display: flex;
+    overflow: hidden;
+    align-items:flex-end;
+    >div{
+        flex-grow: 1;
+        line-height: 18px;
+        padding: 8px 3px 2px 3px;
+        font-size: 14px;
+        word-break:break-all;
+        word-wrap:break-word;
+        margin-bottom: 12px;
+        border-bottom: #ddd 1px solid;
+    }
+    >a{
+        padding: 0 5px;
+        height: 50px;
+        flex-grow: 0;
+        flex-shrink: 0;
+        >i.mui-icon{
+            font-size: 30px;
+            padding-top: 10px;
+            padding-bottom: 5px;
+            vertical-align: bottom;
+        }
+        >i.Hui-icon{
+            width: 30px;
+            height: 30px;
+            background-size: 24px;
+            margin-top: 10px;
+        }
+    }
+    >a:nth-of-type(2){
+        padding-right: 0;
+    }
+    >a:last-child{
+        padding-right: 10px;
+    }
+}
+#chat-scroll{
+    background: #F5F5F5;
+}
