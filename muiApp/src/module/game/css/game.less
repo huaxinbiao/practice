@@ -80,6 +80,7 @@
     display: flex;
     overflow: hidden;
     align-items:flex-end;
+    height: 50px;
     >div{
         flex-grow: 1;
         line-height: 18px;
@@ -120,10 +121,12 @@
 }
 .Hui-chat-scroll{
     position: fixed;
-    bottom: 50px;
+    top: 400px;
+    bottom: 61px;
+    padding: 0 !important;
     z-index: 10;
-    background: #000 !important;
-    height: 400px;
     left: 0;
     width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }

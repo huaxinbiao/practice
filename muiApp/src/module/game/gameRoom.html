@@ -11,11 +11,11 @@
     <script src="../../../static/js/vue.js"></script>
     <!--公共组件-->
     <!--当前页面-->
+    <link href="css/game.css" rel="stylesheet"/>
     <script src="js/gHeader.js"></script>
     <script src="js/gNav.js"></script>
-    <script src="js/inChat.js"></script>
     <script src="js/room.js"></script>
-    <link href="css/game.css" rel="stylesheet"/>
+    <script src="js/inChat.js"></script>
 <!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
 </head>
 <body>
@@ -23,7 +23,7 @@
 		<io-gheader></io-gheader>
 		<io-gnav></io-gnav>
 		<io-canvas v-on:canvasheight="subpagesTop"></io-canvas>
-		<io-chat></io-chat>
+		<io-chat v-bind:canvas-Height="canvasHeight"></io-chat>
 	</div>
     <!--Vue-->
 	<script>
@@ -32,7 +32,7 @@
             el: '#gameRoom',
             data(){
               return {
-                  
+                  canvasHeight:''
               }  
             },
             mounted: function() {
@@ -44,7 +44,7 @@
             methods:{
             	//事件
             	subpagesTop:function(msg){
-            		var canvasHeight = msg+68+'px';
+            		this.canvasHeight = msg+68;
             		//由子组件触发
             	}
             }
@@ -59,12 +59,21 @@
                 bounce: 'vertical'
             });
             main.append(content);
+            //MUI跨页面通讯
             content.addEventListener('loaded',function(){
+            	//hu
     			var i = 'kjdfkgjkfdjk开发的价格的咖啡馆开发代理机构设立考点附近官方的；lhfdzlfjbgdkzlfbjfkgjhfghkfjdghkfsflkgbjkgfnbk';
 				mui.fire(content,'newsId',{
 				    id:i
 				});
            });
+            //MUI跨页面通讯，接收页面事件
+			window.addEventListener('newsId',function(event){
+			  //获得事件参数
+			var id = event.detail.id;
+            var textNode = document.createTextNode(id);
+			  chatsoll.appendChild(textNode)
+			});
         }*/
 	</script>
 </body>

@@ -15,7 +15,7 @@ Vue.component('io-canvas', {
 		this.screenWidth = document.body.clientWidth;
 		this.screenHeight = this.screenWidth*(3/4);
     	this.$emit('canvasheight',this.screenHeight);
-    	var operat = new operatCanvas();
+    	operatCanvas();
 	},
     methods: {
     }
@@ -23,23 +23,21 @@ Vue.component('io-canvas', {
 
 //获取坐标点与颜色画笔类型
 function operatCanvas(){
-	console.log(100)
 	var gameCanvas = document.getElementById("gameCanvas");
+	var ctx=gameCanvas.getContext("2d");
+	var touchAggregate = new Array();
 	var _default = {
 		color: '#333', //画笔颜色
 		lineWidth: 2,  //画笔大小
-		lineCap: 'round', //绘制圆形的结束线帽
+		lineCap: 'round', //绘制圆形的结束线帽 ,可选值:square
 		lineJoin: 'round' //当两条线条交汇时，创建圆形边角
-	}
-	var kk={
-		oo:function(jj){
-			console.log(jj)
-		}
-	}
-	var ctx=gameCanvas.getContext("2d");
+	};
 	var handleStart = function(event){
 		event.preventDefault();
-	    var touches = event.changedTouches;
+	    var touches = event.changedTouches;//获取正在发生此事件的
+	    for(var i=0; i<touches.length; i++){
+	    	console.log(touches[i])
+	    }
 	};
 	var handleMove = function(event){
 		event.preventDefault();
@@ -64,7 +62,10 @@ function operatCanvas(){
 	    var touches = event.changedTouches;
 	};
 	
-	document.addEventListener('touchstart',handleStart,false);
-	document.addEventListener('touchmove',handleMove,false);
-	document.addEventListener('touchend',handleEnd,false);
+	gameCanvas.addEventListener('touchstart',handleStart,false);
+	gameCanvas.addEventListener('touchmove',handleMove,false);
+	gameCanvas.addEventListener('touchend',handleEnd,false);
+}
+function drawCanvas(Page,opt){
+	
 }
