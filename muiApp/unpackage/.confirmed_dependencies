@@ -64,7 +64,8 @@
 			"static/css/icons-extra.css",
 			"static/fonts/mui-icons-extra.ttf",
 			"src/module/game/js/gNav.js",
-			"src/public/images/icon2.png"
+			"src/public/images/icon2.png",
+			"src/module/game/js/inChat.js"
 		],
 		"refer": [
 			"src/module/game/inChat.html"
@@ -80,7 +81,8 @@
 			"src/public/css/Hui.css",
 			"static/css/mui.min.css",
 			"src/module/game/js/room.js",
-			"src/public/images/icon2.png"
+			"src/public/images/icon2.png",
+			"src/module/game/js/gNav.js"
 		]
 	}
 }

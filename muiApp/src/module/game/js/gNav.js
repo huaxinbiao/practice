@@ -1,7 +1,7 @@
 // 游戏房间头部
 
 Vue.component('io-gnav', {
-    template: `<nav class="mui-bar mui-bar-tab Hui-chat-bar">
+    template: `<nav class="mui-bar mui-bar-tab Hui-chat-bar" style="height:auto">
 					<div class="sentNews">
 						<a href="javascript:;"><i class="mui-icon mui-icon-mic"></i></a>
 						<div contenteditable="true"></div>

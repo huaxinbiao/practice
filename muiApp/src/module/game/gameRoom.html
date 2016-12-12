@@ -13,6 +13,7 @@
     <!--当前页面-->
     <script src="js/gHeader.js"></script>
     <script src="js/gNav.js"></script>
+    <script src="js/inChat.js"></script>
     <script src="js/room.js"></script>
     <link href="css/game.css" rel="stylesheet"/>
 <!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
@@ -22,6 +23,7 @@
 		<io-gheader></io-gheader>
 		<io-gnav></io-gnav>
 		<io-canvas v-on:canvasheight="subpagesTop"></io-canvas>
+		<io-chat></io-chat>
 	</div>
     <!--Vue-->
 	<script>
@@ -34,12 +36,6 @@
               }  
             },
             mounted: function() {
-                // 扩展API是否准备好，如果没有则监听“plusready"事件
-		        if(window.plus){
-					createChildPage();
-		        }else{ 
-		            document.addEventListener( "plusready", createChildPage, false );
-		        }
                 /*var socket = io.connect('http://192.168.1.106:3000');
                 socket.on('connected', function(){
                     alert('连上了！');
@@ -50,21 +46,11 @@
             	subpagesTop:function(msg){
             		var canvasHeight = msg+68+'px';
             		//由子组件触发
-	                mui.init({
-	                	subpages:[{
-					      url:'inChat.html',//子页面HTML地址，支持本地地址和网络地址
-					      id:'inChat',//子页面标志
-					      styles:{
-					        top:canvasHeight,//子页面顶部位置
-					        bottom:'50px',//子页面底部位置
-					      }
-					    }]
-	                });
             	}
             }
         })
-        function createChildPage(){
-        	/*//创建子页面
+        /*function createChildPage(){
+        	//创建子页面
         	var main = plus.webview.currentWebview();//获取当前view
 			//创建新的Webview窗口
             var content = plus.webview.create('inChat.html','inChat',{
@@ -78,8 +64,8 @@
 				mui.fire(content,'newsId',{
 				    id:i
 				});
-           });*/
-        }
+           });
+        }*/
 	</script>
 </body>
 </html>
