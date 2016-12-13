@@ -24,7 +24,6 @@ Vue.component('io-canvas', {
 //获取坐标点与颜色画笔类型
 function operatCanvas(){
 	var gameCanvas = document.getElementById("gameCanvas");
-	var ctx=gameCanvas.getContext("2d");
 	var touchAggregate = new Array();
 	var _default = {
 		color: '#333', //画笔颜色
@@ -35,27 +34,21 @@ function operatCanvas(){
 	var handleStart = function(event){
 		event.preventDefault();
 	    var touches = event.changedTouches;//获取正在发生此事件的
+	    var Start = true;
 	    for(var i=0; i<touches.length; i++){
-	    	console.log(touches[i])
+	    	touchAggregate.push(touches[i]);
+	    	var opt = {
+	    		x:touches[i].pageX,
+	    		y:touches[i].pageY
+	    	} 
+	    	drawCanvas(_default,opt,Start);
 	    }
 	};
 	var handleMove = function(event){
 		event.preventDefault();
-      var el = document.getElementById("gameCanvas");
-      var ctx = el.getContext("2d");
-      var touches = event.changedTouches;
-      
-      ctx.lineWidth = 4;
-		console.log(touches[0].pageX-1)
-            
-        var color = '#000';
-
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.moveTo(parseInt(touches[0].pageX-1), parseInt(touches[0].pageY-69));
-        ctx.lineTo(parseInt(touches[0].pageX), parseInt(touches[0].pageY-68));
-        ctx.closePath();
-        ctx.stroke();
+      	var el = document.getElementById("gameCanvas");
+      	var ctx = el.getContext("2d");
+      	var touches = event.changedTouches;
 	};
 	var handleEnd = function(){
 		event.preventDefault();
@@ -66,6 +59,23 @@ function operatCanvas(){
 	gameCanvas.addEventListener('touchmove',handleMove,false);
 	gameCanvas.addEventListener('touchend',handleEnd,false);
 }
-function drawCanvas(Page,opt){
-	
+function drawCanvas(_default,opt,Start){
+	var gameCanvas = document.getElementById("gameCanvas");
+	var ctx=gameCanvas.getContext("2d");
+	ctx.lineWidth = _default.lineWidth;
+	ctx.lineCap = _default.lineCap;
+	ctx.strokeStyle = _default.color;
+	if(Start){
+	    ctx.beginPath();
+	    ctx.moveTo(opt.x-1, opt.y-69);
+	    ctx.lineTo(opt.x, opt.y-68);
+	    ctx.closePath();
+	    ctx.stroke();
+	}else{
+	    ctx.beginPath();
+	    ctx.moveTo(opt.x-1, opt.y-69);
+	    ctx.lineTo(opt.x, opt.y-68);
+	    ctx.closePath();
+	    ctx.stroke();
+	}
 }
