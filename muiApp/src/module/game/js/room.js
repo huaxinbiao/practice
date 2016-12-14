@@ -35,7 +35,8 @@ function operatCanvas(){
 		event.preventDefault();
 	    var touches = event.changedTouches;//获取正在发生此事件的
 	    var Start = true;
-	    for(var i=0; i<touches.length; i++){
+	    console.log(touches)
+	    for(let i=0; i<touches.length; i++){
 	    	touchAggregate.push(touches[i]);
 	    	var opt = {
 	    		x:touches[i].pageX,
@@ -46,14 +47,57 @@ function operatCanvas(){
 	};
 	var handleMove = function(event){
 		event.preventDefault();
-      	var el = document.getElementById("gameCanvas");
-      	var ctx = el.getContext("2d");
-      	var touches = event.changedTouches;
+	    var touches = event.changedTouches;//获取正在发生此事件的
+	    for(let i=0; i<touches.length; i++){
+	    	let startTouch = returnArrof(touches[i]);
+	    	if(startTouch){
+		    	var opt = {
+		    		x:touches[i].pageX,
+		    		y:touches[i].pageY,
+		    		sx:startTouch.pageX,
+		    		sy:startTouch.pageY
+		    	}
+		    	drawCanvas(_default,opt);
+	    	}
+	    }
 	};
 	var handleEnd = function(){
 		event.preventDefault();
 	    var touches = event.changedTouches;
+	    for(let i=0; i<touches.length; i++){
+	    	let startTouch = returnArrof(touches[i]);
+	    	if(startTouch){
+		    	var opt = {
+		    		x:touches[i].pageX,
+		    		y:touches[i].pageY,
+		    		sx:startTouch.pageX,
+		    		sy:startTouch.pageY
+		    	} 
+		    	drawCanvas(_default,opt);
+	    		removeArr(touches[i]);
+	    	}
+	    }
 	};
+	//删除
+	var removeArr = function(moveObj){
+		for(let i=0; i<touchAggregate.length; i++){
+			if(moveObj.identifier == touchAggregate[i].identifier){
+				touchAggregate.splice(i, 1);
+			}
+		}
+	}
+	//去除数组包含向
+	var returnArrof = function(moveObj){
+		for(let i=0; i<touchAggregate.length; i++){
+			if(moveObj.identifier == touchAggregate[i].identifier){
+				let pvertouch = touchAggregate[i]
+				touchAggregate[i] = moveObj;
+				return pvertouch;
+			}else{
+				return -1;
+			}
+		}
+	}
 	
 	gameCanvas.addEventListener('touchstart',handleStart,false);
 	gameCanvas.addEventListener('touchmove',handleMove,false);
@@ -73,7 +117,7 @@ function drawCanvas(_default,opt,Start){
 	    ctx.stroke();
 	}else{
 	    ctx.beginPath();
-	    ctx.moveTo(opt.x-1, opt.y-69);
+	    ctx.moveTo(opt.sx, opt.sy-69);
 	    ctx.lineTo(opt.x, opt.y-68);
 	    ctx.closePath();
 	    ctx.stroke();
