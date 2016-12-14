@@ -15,7 +15,19 @@ Vue.component('io-canvas', {
 		this.screenWidth = document.body.clientWidth;
 		this.screenHeight = this.screenWidth*(3/4);
     	this.$emit('canvasheight',this.screenHeight);
-    	operatCanvas();
+    	let canvasGo = new operatCanvas();
+	    let Start = true;
+		let _default = {
+			color: '#000', //画笔颜色
+			lineWidth: 5,  //画笔大小
+			lineCap: 'round', //绘制圆形的结束线帽 ,可选值:square
+			lineJoin: 'round' //当两条线条交汇时，创建圆形边角
+		};
+    	let opt = {
+    		x:100,
+    		y:100
+    	} 
+    	canvasGo.drawCanvas(_default,opt,Start);
 	},
     methods: {
     }
@@ -24,102 +36,103 @@ Vue.component('io-canvas', {
 //获取坐标点与颜色画笔类型
 function operatCanvas(){
 	var gameCanvas = document.getElementById("gameCanvas");
+	var ctx=gameCanvas.getContext("2d");
 	var touchAggregate = new Array();
+	var that = this;
 	var _default = {
 		color: '#333', //画笔颜色
-		lineWidth: 2,  //画笔大小
+		lineWidth: 3,  //画笔大小
 		lineCap: 'round', //绘制圆形的结束线帽 ,可选值:square
 		lineJoin: 'round' //当两条线条交汇时，创建圆形边角
 	};
-	var handleStart = function(event){
+	this.handleStart = function(event){
 		event.preventDefault();
 	    var touches = event.changedTouches;//获取正在发生此事件的
 	    var Start = true;
-	    console.log(touches)
 	    for(let i=0; i<touches.length; i++){
 	    	touchAggregate.push(touches[i]);
-	    	var opt = {
+	    	let opt = {
 	    		x:touches[i].pageX,
 	    		y:touches[i].pageY
 	    	} 
-	    	drawCanvas(_default,opt,Start);
+	    	that.drawCanvas(_default,opt,Start);
 	    }
 	};
-	var handleMove = function(event){
+	this.handleMove = function(event){
 		event.preventDefault();
 	    var touches = event.changedTouches;//获取正在发生此事件的
 	    for(let i=0; i<touches.length; i++){
-	    	let startTouch = returnArrof(touches[i]);
-	    	if(startTouch){
-		    	var opt = {
-		    		x:touches[i].pageX,
-		    		y:touches[i].pageY,
-		    		sx:startTouch.pageX,
-		    		sy:startTouch.pageY
-		    	}
-		    	drawCanvas(_default,opt);
+	    	let idx = ongoingTouchIndexById(touches[i].identifier);
+	    	let opt = {
+	    		x:touches[i].pageX,
+	    		y:touches[i].pageY,
+	    		sx:touchAggregate[idx].pageX,
+	    		sy:touchAggregate[idx].pageY
 	    	}
+	    	that.drawCanvas(_default,opt);
+			touchAggregate.splice(idx, 1, touches[i]);
 	    }
 	};
-	var handleEnd = function(){
+	this.handleEnd = function(){
 		event.preventDefault();
 	    var touches = event.changedTouches;
-	    for(let i=0; i<touches.length; i++){
-	    	let startTouch = returnArrof(touches[i]);
-	    	if(startTouch){
-		    	var opt = {
-		    		x:touches[i].pageX,
-		    		y:touches[i].pageY,
-		    		sx:startTouch.pageX,
-		    		sy:startTouch.pageY
-		    	} 
-		    	drawCanvas(_default,opt);
-	    		removeArr(touches[i]);
+	    for (let i=0; i<touches.length; i++) {
+		    let idx = ongoingTouchIndexById(touches[i].identifier);
+	    	let opt = {
+	    		x:touches[i].pageX,
+	    		y:touches[i].pageY,
+	    		sx:touchAggregate[idx].pageX,
+	    		sy:touchAggregate[idx].pageY
 	    	}
-	    }
+	    	that.drawCanvas(_default,opt);
+		    touchAggregate.splice(i, 1);  // remove it; we're done
+		}
 	};
-	//删除
-	var removeArr = function(moveObj){
-		for(let i=0; i<touchAggregate.length; i++){
-			if(moveObj.identifier == touchAggregate[i].identifier){
-				touchAggregate.splice(i, 1);
-			}
-		}
-	}
-	//去除数组包含向
-	var returnArrof = function(moveObj){
-		for(let i=0; i<touchAggregate.length; i++){
-			if(moveObj.identifier == touchAggregate[i].identifier){
-				let pvertouch = touchAggregate[i]
-				touchAggregate[i] = moveObj;
-				return pvertouch;
-			}else{
-				return -1;
-			}
-		}
-	}
 	
-	gameCanvas.addEventListener('touchstart',handleStart,false);
-	gameCanvas.addEventListener('touchmove',handleMove,false);
-	gameCanvas.addEventListener('touchend',handleEnd,false);
-}
-function drawCanvas(_default,opt,Start){
-	var gameCanvas = document.getElementById("gameCanvas");
-	var ctx=gameCanvas.getContext("2d");
-	ctx.lineWidth = _default.lineWidth;
-	ctx.lineCap = _default.lineCap;
-	ctx.strokeStyle = _default.color;
-	if(Start){
-	    ctx.beginPath();
-	    ctx.moveTo(opt.x-1, opt.y-69);
-	    ctx.lineTo(opt.x, opt.y-68);
-	    ctx.closePath();
-	    ctx.stroke();
-	}else{
-	    ctx.beginPath();
-	    ctx.moveTo(opt.sx, opt.sy-69);
-	    ctx.lineTo(opt.x, opt.y-68);
-	    ctx.closePath();
-	    ctx.stroke();
+	this.handleCancel = function(event) {
+      	evt.preventDefault();
+      	var touches = evt.changedTouches;
+      
+      	for (let i=0; i<touches.length; i++) {
+        	touchAggregate.splice(i, 1);  // remove it; we're done
+      	}
+    }
+	this.drawCanvas = function(_default,opt,Start){
+		ctx.lineWidth = _default.lineWidth;
+		ctx.strokeStyle = _default.color;
+		ctx.lineCap = _default.lineCap;
+		ctx.lineJoin = _default.lineJoin;
+		if(Start){
+		    ctx.beginPath();
+		    ctx.moveTo(opt.x-1, opt.y-69);
+		    ctx.lineTo(opt.x, opt.y-68);
+		    ctx.closePath();
+		    ctx.stroke();
+		}else{
+		    ctx.beginPath();
+		    ctx.moveTo(opt.sx, opt.sy-68);
+		    ctx.lineTo(opt.x, opt.y-68);
+		    ctx.closePath();
+		    ctx.stroke();
+		}
 	}
+	var ongoingTouchIndexById = function(idToFind){
+		for (let i=0; i<touchAggregate.length; i++) {
+	        let id = touchAggregate[i].identifier;
+	        
+	        if (id == idToFind) {
+	          return i;
+	        }
+	    }
+	    return -1;    // not found
+	}
+	this.init = function(){
+		gameCanvas.addEventListener('touchstart',that.handleStart,false);
+		gameCanvas.addEventListener('touchmove',that.handleMove,false);
+		gameCanvas.addEventListener('touchcancel',that.handleCancel,false);
+		gameCanvas.addEventListener('touchend',that.handleEnd,false);
+	    gameCanvas.addEventListener("touchleave", that.handleEnd, false);
+	}
+	this.init();
 }
+
