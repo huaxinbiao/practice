@@ -8,29 +8,38 @@ Vue.component('io-canvas', {
     data(){
       return {
           screenHeight: '',
-          screenWidth: ''
+          screenWidth: '',
+          canvasGo:''
       }  
     },
 	mounted:function() {
+    	this.canvasGo = new operatCanvas();
 		this.screenWidth = document.body.clientWidth;
 		this.screenHeight = this.screenWidth*(3/4);
     	this.$emit('canvasheight',this.screenHeight);
-    	let canvasGo = new operatCanvas();
-	    let Start = true;
-		let _default = {
-			color: '#000', //画笔颜色
-			lineWidth: 5,  //画笔大小
-			lineCap: 'round', //绘制圆形的结束线帽 ,可选值:square
-			lineJoin: 'round' //当两条线条交汇时，创建圆形边角
-		};
-    	let opt = {
-    		x:100,
-    		y:100
-    	} 
-    	canvasGo.drawCanvas(_default,opt,Start);
 	},
     methods: {
-    }
+		updateMessage: function () {
+		    this.$nextTick(function () {//当值变化dom更新完成
+    			var that = this;
+				let _default = {
+					color: '#333', //画笔颜色
+					lineWidth: 3,  //画笔大小
+					lineCap: 'round', //绘制圆形的结束线帽 ,可选值:square
+					lineJoin: 'round' //当两条线条交汇时，创建圆形边角
+				};
+			    let Start = true;
+		    	let opt = {
+		    		x:100,
+		    		y:100
+		    	}
+		    	that.canvasGo.drawCanvas(_default,opt,Start);
+		    })
+	    }
+    },
+    watch:{
+　　　　 screenHeight:'updateMessage'//当值变化时触发
+　　}
 });
 
 //获取坐标点与颜色画笔类型
