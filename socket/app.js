@@ -14,13 +14,16 @@ var server = app.listen(port, function(){
 })
 var io = require('socket.io').listen(server);
 
-var messages = [];
+var messages = [];//暂时存放消息
 io.sockets.on('connection', function(socket){
     socket.on('getAllMessages', function(){
+        //用户连上后，发送messages
         socket.emit('allMessages', messages);
     });
-    socket.on('createMessage', function(){
-        messages.push(messages);
-        io.sockets.emit('messageAdded', messages);
+    socket.on('createMessage', function(message){
+        //用户向服务器发送消息，存放到messages
+        //messages.push(message);
+        //向所有用户发送消息
+        io.sockets.emit('messageAdded', message);
     })
 })

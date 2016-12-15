@@ -16,7 +16,7 @@
     <script src="js/gNav.js"></script>
     <script src="js/room.js"></script>
     <script src="js/inChat.js"></script>
-<!--	<script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>-->
+    <script type='text/javascript' src='http://192.168.1.106:3000/socket.io/socket.io.js' charset='utf-8'></script>
 </head>
 <body>
 	<div id="gameRoom">
@@ -27,6 +27,8 @@
 	</div>
     <!--Vue-->
 	<script>
+        //连接socket
+		Vue.prototype.socket = io.connect('http://192.168.1.106:3000');
         // 创建根实例
         new Vue({
             el: '#gameRoom',
@@ -36,9 +38,17 @@
               }  
             },
             mounted: function() {
-                /*var socket = io.connect('http://192.168.1.106:3000');
-                socket.on('connected', function(){
-                    alert('连上了！');
+                //触发服务器事件
+                //socket.emit('getAllMessages');
+                //监听服务器返回消息
+                /*socket.on('allMessages', function(messages){
+                    console.log(messages);
+                })
+                this.socket.emit('createMessage',10,function(){
+                	console.log(1012)
+                });
+                this.socket.on('messageAdded', function(messages){
+                    console.log(messages);
                 })*/
             },
             methods:{
