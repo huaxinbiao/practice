@@ -10,7 +10,8 @@ Vue.component('io-canvas', {
           screenHeight: '',
           screenWidth: '',
           canvasGo:'',
-          messages:[]
+          messages:[],
+          dom:false
       }  
     },
 	mounted:function() {
@@ -21,17 +22,23 @@ Vue.component('io-canvas', {
     	this.$emit('canvasheight',this.screenHeight);
         //接收消息
         this.socket.on('messageAdded', function(message){
-            that.messages.push(message);
-        })
+            if(that.dom){
+            	that.canvasGo.drawCanvas(message.parameter,message.opt,message.Start);
+            }else{
+            	that.messages.push(message);
+            }
+        });
 	},
     methods: {
 		updateMessage: function () {
 		    this.$nextTick(function () {//当值变化dom更新完成
-    			this.automatic()
+    			this.dom = true;
+    			if(this.messages.length>0){
+    				for(let i=0; i<this.messages.length; i++){
+    					this.canvasGo.drawCanvas(message[i].parameter,message[i].opt,message[i].Start);
+    				}
+    			}
 		    })
-	    },
-	    automatic:function(){
-	    	//this.canvasGo.drawCanvas(message._default,message.opt,message.Start)
 	    },
 	    send:function(message){
 	    	//发送消息
