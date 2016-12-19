@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<input id="send" type="button" value="发送消息" />
+		<input id="close" type="button" value="断开连接" />
+		<script>
+			// 创建一个Socket实例
+			var socket = new WebSocket('ws://123.56.178.4:9501');
+			// 打开Socket 
+			socket.onopen = function(event) { 
+				console.log(event);
+			  // 发送一个初始化消息
+			  socket.send('连接上了发送一条消息');
+			
+			  // 监听消息
+			  socket.onmessage = function(event) { 
+			    console.log('有消息来了',event); 
+			  }; 
+			
+			  // 监听Socket的关闭
+			  socket.onclose = function(event) { 
+			    console.log('断开连接了',event); 
+			  }; 
+			
+			  // 关闭Socket.... 
+			  //socket.close() 
+			};
+			document.getElementById("send").onclick=function(){
+				socket.send('发送消息了~');
+			}
+			document.getElementById("close").onclick=function(){
+				socket.close(1000);
+			}
+		</script>
+	</body>
+</html>

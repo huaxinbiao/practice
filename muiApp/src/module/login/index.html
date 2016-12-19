@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>你画我猜</title>
+    <link href="../../../static/css/mui.min.css" rel="stylesheet"/>
+    <link href="../../public/css/Hui.css" rel="stylesheet"/>
+    <script src="../../../static/js/mui.min.js"></script>
+    <script src="../../../static/js/vue.js"></script>
+    <!--当前页面-->
+    <link href="css/login.css" rel="stylesheet"/>
+    <script src="js/login.js"></script>
+    <script src="js/reg.js"></script>
+</head>
+<body>
+  	<div id="Login">
+  		<!--<div class="login-reg">
+  			<div>
+  				<a href="javascript:;">注册</a>
+  				<a href="javascript:;">登陆</a>
+  			</div>
+  		</div>-->
+  		<!--<div class="login">
+  			<h2>登录</h2>
+  			<div>
+  				<input type="tel" required="required" placeholder="输入手机号码" />
+  				<input type="password" placeholder="输入密码" />
+  				<input type="button" value="登陆" />
+  			</div>
+  			<p>
+  				<a href="javascript:;">去注册</a>
+  				<a href="javascript:;">去登陆</a>
+  			</p>
+  		</div>-->
+  		<div class="login">
+  			<h2>登录</h2>
+  			<div>
+  				<input type="tel" required="required" placeholder="输入手机号" />
+  				<div>
+  					<input type="number" placeholder="输入验证码" />
+  					<a href="javascript:;">获取验证码</a>
+  				</div>
+  				<input type="password" placeholder="设置密码" />
+  				<input type="button" value="注册" />
+  			</div>
+  			<p>
+  				<a href="javascript:;">去注册</a>
+  				<a href="javascript:;">去登陆</a>
+  			</p>
+  		</div>
+	</div>
+   <!--Vue-->
+	<script>
+        // 创建根实例
+        new Vue({
+            el: '#Login',
+            data(){
+              return {
+              }  
+            },
+            mounted: function() {
+            	//初始化
+                mui.init();
+            },
+            methods:{
+            	//事件绑定
+            }
+        })
+	</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+body{background: #fff;}
+.login-reg{
+	background: #cd3d3d url(../../../public/images/icon1.png) no-repeat center 22% ;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	>div{
+		position: absolute;
+		background: #fff;
+		bottom: 0;
+		width: 100%;
+		height: 30%;
+		text-align: center;
+		&:after{
+			content: " ";
+			display: block;
+			position: absolute;
+			top: -30%;
+			border-radius: 50%;
+			left: -50%;
+			width: 200%;
+			height: 200%;
+			background: #fff;
+			z-index: -1;
+		}
+		>a{
+			display: inline-block;
+			background: #f67575;
+			color: #fff;
+			line-height: 36px;
+			width: 92px;
+			text-align: center;
+			margin: 50px 16px 0 12px;
+		}
+	}
+}
+.login{
+	padding: 50px 15px;
+	>h2{
+		color: #cd3d3d;
+		text-align: center;
+		line-height: 50px;
+		font-size: 24px;
+	}
+	>div{
+		padding: 15px 0;
+		input{
+			border-radius: 0;
+			padding: 5px 0;
+			border: none;
+			border-bottom: #cd3d3d 1px solid;
+			color: #cd3d3d;
+			font-size: 14px;
+		}
+		input[type="button"]{
+			width: 100%;
+			border: none;
+			color: #fff;
+			background: #cd3d3d;
+			border-radius: 3px;
+			height: 36px;
+			margin-top: 20px;
+			font-size: 16px;
+		}
+		>div{
+			position: relative;
+			overflow: hidden;
+			>input[type="number"]{
+				width: 50%;
+			}
+			>a{
+				display: inline-block;
+				float: right;
+				line-height: 26px;
+				border: #cd3d3d 1px solid;
+				margin-top: 10px;
+				font-size: 14px;
+				color: #cd3d3d;
+				padding: 1px 15px;
+				border-radius: 3px;
+			}
+		}
+	}
+	>p{
+		font-size: 12px;
+		overflow: hidden;
+		a{
+			color: #999;
+		}
+		a:last-child{
+			float: right;
+		}
+		a:first-child{
+			float: left;
+		}
+	}
+}
+input::-webkit-input-placeholder{ 
+color: #cd3d3d; 
+} 
+input:-moz-placeholder{ 
+color: #cd3d3d; 
+} 
+input::-moz-placeholder{ 
+color: #cd3d3d; 
+} 
+input:-ms-input-placeholder{ 
+color: #cd3d3d; 
+} 
