@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var path = require('path');
+var settings = require('./settings')
 
 var port = process.env.PORT || 3000
 console.log(port);
