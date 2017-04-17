@@ -16,7 +16,7 @@
     <script src="js/gNav.js"></script>
     <script src="js/room.js"></script>
     <script src="js/inChat.js"></script>
-    <script type='text/javascript' src='http://192.168.1.114:3000/socket.io/socket.io.js' charset='utf-8'></script>
+    <script type='text/javascript' src='http://localhost:3000/socket.io/socket.io.js' charset='utf-8'></script>
 </head>
 <body>
 	<div id="gameRoom">
@@ -28,7 +28,7 @@
     <!--Vue-->
 	<script>
         //连接socket
-		Vue.prototype.socket = io.connect('http://192.168.1.114:3000');
+		Vue.prototype.socket = io.connect('http://localhost:3000/');
         // 创建根实例
         new Vue({
             el: '#gameRoom',

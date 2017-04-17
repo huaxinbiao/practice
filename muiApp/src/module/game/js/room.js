@@ -28,6 +28,11 @@ Vue.component('io-canvas', {
             	that.messages.push(message);
             }
         });
+        //页面大小改变
+        window.onresize = function(){
+        	that.screenWidth = document.body.clientWidth;
+			that.screenHeight = that.screenWidth*(3/4);
+        }
 	},
     methods: {
 		updateMessage: function () {
