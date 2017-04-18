@@ -24,7 +24,7 @@ app.use(flash());
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));//设置favicon图标
 app.use(logger('dev'));//加载日志中间件
 app.use(bodyParser.json());//加载解析json的中间件
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));//设置静态文件存放目录
 

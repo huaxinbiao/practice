@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var bodyParser = require('body-parser');
 var session = require('express-session');
 
 var session = require('express-session');
@@ -16,17 +17,20 @@ app.set('views', path.join(__dirname, 'views'));//设置模板目录
 app.set('view engine', 'ejs');//设置模板引擎
 app.use(express.static(path.join(__dirname, '/static')));//设置静态文件存放目录
 
+app.use(bodyParser.json());//加载解析json的中间件
+app.use(bodyParser.urlencoded({ extended: false }));
+
 //session
 app.use(session({
 	secret: settings.cookieSecret,
 	key: settings.db,//cookie name
 	cookie: {maxAge:1000 * 60 * 60 * 24 * 30},//30天
-	/*store: new MongoStore({
+	store: new MongoStore({
 		db: settings.db,
 		host: settings.host,
 		port: settings.port,
-		url: 'mongodb://localhost/blog'
-	})*/
+		url: 'mongodb://localhost/chat'
+	})
 }));
 
 routes(app);
