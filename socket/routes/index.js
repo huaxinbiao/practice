@@ -1,7 +1,7 @@
-var crypto = require('crypto');//加密密码
-var validator = require('validator');//表单验证
-var svgCaptcha = require('svg-captcha');
-var User = require('../models/user.js');
+const crypto = require('crypto');//加密密码
+const validator = require('validator');//表单验证
+const svgCaptcha = require('svg-captcha');
+const User = require('../models/user.js');
 	
 /* GET home page. */
 module.exports = function(app){
@@ -54,7 +54,13 @@ module.exports = function(app){
 			}
 			req.session.user = user;//用户信息存入session
 			res.status(200);
-			res.json(user);
+			res.json({
+				code: 200,
+				data:{
+					mobile: user.mobile,
+					token: user.token
+				}
+			});
 		});
 	})
 }
