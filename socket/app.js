@@ -22,6 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 //session
 app.use(session({
+    resave: false,  
+    saveUninitialized: true,  
 	secret: settings.cookieSecret,
 	key: settings.db,//cookie name
 	cookie: {maxAge:1000 * 60 * 60 * 24 * 30},//30天

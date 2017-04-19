@@ -11,9 +11,9 @@ module.exports = User;
 //储存用户信息
 User.prototype.save = function(callback){
 	//要存入数据库的用户文档
-	let time = new Date().getTime();
+	let time = new Date().getTime().toString();
 	let md5 = crypto.createHash('md5');
-	let token = md5.update(time+this.password).digest('hex');
+	let token = md5.update(time+this.password+'HUA').digest('hex');
 	let user = {
 		mobile: this.mobile,
 		password: this.password,
@@ -43,5 +43,63 @@ User.prototype.save = function(callback){
 			});
 		});
 		
+	});
+};
+
+//读取用户信息
+User.get = function(mobile, callback){
+	//打开数据库
+	mongodb.open(function(err, db){
+		if(err){
+			return callback(err);
+		}
+		//读取users集合
+		db.collection('users',function(err, collection){
+			if(err){
+				mongodb.close();
+				return callback(err);
+			}
+			//查找用户名为name的一个文档
+			collection.findOne({
+				mobile: mobile
+			}, function(err, user){
+				mongodb.close();
+				if(err){
+					return callback(err);
+				}
+				callback(null, user);//成功！返回查询的用户信息
+			})
+		})
+	});
+};
+
+//更新用户信息
+User.update = function(mobile, token, callback){
+	//打开数据库
+	mongodb.open(function(err, db){
+		if(err){
+			return callback(err);
+		}
+		//读取users集合
+		db.collection('users',function(err, collection){
+			if(err){
+				mongodb.close();
+				return callback(err);
+			}
+			//更新用户名为mobile的一个文档
+			collection.update({
+				'mobile': mobile
+			},{
+				$set:{
+					'token': token
+				}
+			}, {safe:true}, function(err, result){
+				mongodb.close();
+				if(err){
+					return callback(err);
+				}
+				callback(null, token);//成功！返回查询的用户信息
+			})
+		})
 	});
 };
