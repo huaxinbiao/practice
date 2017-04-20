@@ -1,4 +1,5 @@
 var express = require('express');
+var Server = require("http").Server;
 var path = require('path');
 var bodyParser = require('body-parser');
 var session = require('express-session');
@@ -8,8 +9,12 @@ var MongoStore = require('connect-mongo')(session);
 
 var settings = require('./settings');
 var routes = require('./routes/index');
+var Socket = require('./routes/socket');
 
 var app = express();
+//socket共享session
+var server = Server(app);
+var sio = require("socket.io")(server);
 
 app.set('port',process.env.POST || 3000);
 
@@ -21,9 +26,10 @@ app.use(bodyParser.json());//加载解析json的中间件
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //session
-app.use(session({
-    resave: false,  
-    saveUninitialized: true,  
+var sessionMiddleware = session({
+    resave: true,  //是否允许session重新设置，要保证session有操作的时候更新session必须设置这个属性为true
+    rolling: true, //是否按照原设定的maxAge值重设session同步到cookie中，要保证session有操作的时候必须设置这个属性为true
+    saveUninitialized: false,  //是否设置session在存储容器中可以给修改
 	secret: settings.cookieSecret,
 	key: settings.db,//cookie name
 	cookie: {maxAge:1000 * 60 * 60 * 24 * 30},//30天
@@ -33,7 +39,11 @@ app.use(session({
 		port: settings.port,
 		url: 'mongodb://localhost/chat'
 	})
-}));
+})
+sio.use(function(socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+})
+app.use(sessionMiddleware);
 
 routes(app);
 
@@ -71,37 +81,13 @@ app.use(function(err, req, res, next) {
 });
 
 
-var server = app.listen(app.get('port'), function(){
+var d_server = app.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
+//聊天Socket
+Socket(sio.listen(d_server))
 
-//聊天
-var io = require('socket.io').listen(server);
 
-var messages = [];//暂时存放画图坐标消息
-var chatMessage = [] //暂存用户聊天消息
-
-//socket连接成功之后触发，用于初始化
-io.sockets.on('connection', function(socket){
-    socket.on('getAllMessages', function(){
-        //用户连上后，发送messages
-        socket.emit('allMessages', messages);
-    });
-    socket.on('createMessage', function(message){
-        //用户向服务器发送消息，存放到messages
-        messages.push(message);
-        //向除自己外的所有用户发送消息
-        socket.broadcast.emit('messageAdded', message);
-    });
-    //用户发送的聊天信息
-    socket.on('chatMessage', function(message,fn){
-    	if(message.source == 1){
-    		message.source = 2;
-    	}
-    	socket.broadcast.emit('userMessage', message);
-    	fn();//回调，告诉客户端发送成功；
-    })
-})
 
 
