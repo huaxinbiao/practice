@@ -179,7 +179,7 @@ module.exports = function(app){
 	
 	//退出登录
 	app.get('/outlogin', function(req, res){
-		console.log(req.session.user)
+		console.log(req.session)
 	})
 }
 
