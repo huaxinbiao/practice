@@ -24,9 +24,11 @@ module.exports = function(app){
 	  	if (req.method == 'OPTIONS') {
 	    	res.sendStatus(200); /*让options请求快速返回*/
 	  	}else {
-	    	next();
+	  		next();
 	  	}
 	})
+	app.all('*', checkToken);
+	
 	app.get('/', function(req, res){
 	  	res.render('index');
 	})
@@ -179,7 +181,52 @@ module.exports = function(app){
 	
 	//退出登录
 	app.get('/outlogin', function(req, res){
-		console.log(req.session)
+		req.session.user = null;
+		return res.json({
+			code: 200,
+			msg: '退出成功'
+		});
 	})
+	
+	//页面权限控制
+	function checkToken(req, res, next){
+		let url = req.url.split("?")[0];
+		if(url == '/login' || url == '/reg' || url == '/code'){
+			return next();
+		}
+		if(!req.session.user){
+			return res.json({
+				code: 104,
+				msg: '请先登录'
+			});
+		}
+		if(url == '/outlogin'){
+			return next();
+		}
+		//获取用户信息
+		User.get(req.body.mobile, function(err, user){
+			if(err){
+				return res.json({
+					code: 101,
+					msg: '获取用户失败'
+				});
+			}
+			if(user){
+				if(user.token != req.body.token){
+					req.session.user = null;
+					return res.json({
+						code: 104,
+						msg: 'Token错误'
+					});
+				}
+				next();
+			}else{
+				return res.json({
+					code: 104,
+					msg: '账号错误'
+				});
+			}
+		});
+	}
 }
 
