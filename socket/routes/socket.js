@@ -6,9 +6,16 @@ module.exports = function(io){
 	//socket连接成功之后触发，用于初始化
 	io.sockets.on('connection', function(socket){
 		console.log('连接成功')
-		if(socket.request.session.user){
+		if(!socket.request.session.user){
+			//先告诉客户端未登录，不用自动重连
+			socket.emit('nologin', {
+				login: 0
+			});
+			//未登录用户断开连接
 			socket.disconnect();
-		}
+			return false;
+		};
+		
 	    socket.on('getAllMessages', function(){
 	        //用户连上后，发送messages
 	        socket.emit('allMessages', messages);
@@ -27,11 +34,15 @@ module.exports = function(io){
 	    	socket.broadcast.emit('userMessage', message);
 	    	fn();//回调，告诉客户端发送成功；
 	    })
-	    socket.on('login', function(message, fn){
+	    
+	    //测试连接是否成功
+	    socket.on('reconnec', function(message, fn){
 	        //用户连上后，发送messages
+	        socket.emit('reconnecp', {v:0});
 	        console.log(message)
 	        fn();
 	    });
+	    
 		socket.on('disconnect',function(data){
 			console.log('断开连接')
 		});
