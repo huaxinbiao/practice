@@ -10,6 +10,7 @@ var MongoStore = require('connect-mongo')(session);
 var settings = require('./settings');
 var routes = require('./routes/index');
 var Socket = require('./routes/socket');
+var room = require('./routes/room');
 
 var app = express();
 //socket共享session
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, '/static')));//设置静态文件存
 
 app.use(bodyParser.json());//加载解析json的中间件
 app.use(bodyParser.urlencoded({ extended: false }));
+
 
 //session
 var sessionMiddleware = session({
@@ -46,6 +48,7 @@ sio.use(function(socket, next) {
 app.use(sessionMiddleware);
 
 routes(app);
+room(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
