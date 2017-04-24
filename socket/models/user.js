@@ -16,6 +16,7 @@ User.prototype.save = function(callback){
 	let token = md5.update(time+this.password+'HUA').digest('hex');
 	let user = {
 		mobile: this.mobile,
+		head: '',
 		password: this.password,
 		time: time,
 		token: token
@@ -74,7 +75,7 @@ User.get = function(mobile, callback){
 };
 
 //更新用户信息
-User.update = function(mobile, token, callback){
+User.update = function(field, data, callback){
 	//打开数据库
 	mongodb.open(function(err, db){
 		if(err){
@@ -87,18 +88,12 @@ User.update = function(mobile, token, callback){
 				return callback(err);
 			}
 			//更新用户名为mobile的一个文档
-			collection.update({
-				'mobile': mobile
-			},{
-				$set:{
-					'token': token
-				}
-			}, {safe:true}, function(err, result){
+			collection.update(field, data , {safe:true}, function(err, result){
 				mongodb.close();
 				if(err){
 					return callback(err);
 				}
-				callback(null, token);//成功！返回查询的用户信息
+				callback(null, result);//成功！返回查询的用户信息
 			})
 		})
 	});

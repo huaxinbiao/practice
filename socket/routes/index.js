@@ -1,9 +1,9 @@
 const crypto = require('crypto');//加密密码
 const validator = require('validator');//表单验证
-const svgCaptcha = require('svg-captcha');
+const svgCaptcha = require('svg-captcha');//验证码
 const User = require('../models/user.js');
 	
-/* GET home page. */
+/* 登录，注册，首页 */
 module.exports = function(app){
 	app.use(function(req, res, next){
 		//设置跨域访问
@@ -157,7 +157,11 @@ module.exports = function(app){
 				let time = new Date().getTime().toString();
 				let md5 = crypto.createHash('md5');
 				let token = md5.update(time+req.body.password+'HUA').digest('hex');
-				User.update(user.mobile, token, function(err, token){
+				User.update({
+						mobile: user.mobile
+					}, {
+						$set:{token: token}
+					}, function(err, result){
 					user.token = token;
 					req.session.user = user;//用户信息存入session
 					res.status(200);
@@ -200,11 +204,17 @@ module.exports = function(app){
 				msg: '请先登录'
 			});
 		}
+		//判断请求方式,获取token
+		if(req.method.toLowerCase() == 'get'){
+			var token = req.query.token;
+		}else{
+			var token = req.body.token;
+		}
 		if(url == '/outlogin'){
 			return next();
 		}
 		//获取用户信息
-		User.get(req.body.mobile, function(err, user){
+		User.get(req.session.user.mobile, function(err, user){
 			if(err){
 				return res.json({
 					code: 101,
@@ -212,7 +222,7 @@ module.exports = function(app){
 				});
 			}
 			if(user){
-				if(user.token != req.body.token){
+				if(user.token != token){
 					req.session.user = null;
 					return res.json({
 						code: 104,
@@ -221,6 +231,7 @@ module.exports = function(app){
 				}
 				next();
 			}else{
+				req.session.user = null;
 				return res.json({
 					code: 104,
 					msg: '账号错误'
