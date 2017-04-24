@@ -55,7 +55,7 @@ exports.getroom = function (roomId, callback = function(){}){
 			
 			//根据房间id查用户房间的集合
 			var RoomArray = addObjectID(roomId);
-			console.log(RoomArray)
+			//console.log(RoomArray)
 			collection.find({
 				_id: {
 					"$in": RoomArray

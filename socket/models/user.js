@@ -19,6 +19,7 @@ User.prototype.save = function(callback){
 		head: '',
 		password: this.password,
 		time: time,
+		room: [],
 		token: token
 	};
 	//打开数据库

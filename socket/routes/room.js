@@ -20,6 +20,13 @@ module.exports = function(app){
 			});
 		}
 		//创建房间，写入房间信息房主信息
+		var complete = false;
+		if(complete){
+			return	res.json({
+				code: 103,
+				msg: '操作太频繁'
+			});;
+		}
 		var user = req.session.user;
 		Room.create({
 			name: req.body.name,
@@ -33,11 +40,13 @@ module.exports = function(app){
 			}]
 		}, function(err, room){
 			//当房间创建成功将房间id放入用户信息中
+			complete = true;
 			User.update({
 					mobile: user.mobile
 				}, {
 					$push:{"room": room._id}
 				}, function(err, result){
+					complete = false;
 					req.session.user.room.push(room._id)
 					res.status(200);
 					res.json({
