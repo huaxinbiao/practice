@@ -1,4 +1,6 @@
 const mongodb = require('./db');
+const MongoClient = mongodb.MongoClient;
+const mongoConnectUrl = mongodb.mongoConnectUrl;
 const crypto = require('crypto');//加密
 
 function User(user){
@@ -23,21 +25,21 @@ User.prototype.save = function(callback){
 		token: token
 	};
 	//打开数据库
-	mongodb.open(function(err, db){
+	MongoClient.connect(mongoConnectUrl, function(err, db){
 		if(err){
 			return callback(err);
 		}
 		//读取user
 		db.collection('users',function(err, collection){
 			if(err){
-				mongodb.close();
+				db.close();
 				return callback(err);
 			}
 			//将用户信息插入users
 			collection.insert(user,{
 				safe: true
 			}, function(err, user){
-				mongodb.close();
+				db.close();
 				if(err){
 					return callback(err);
 				}
@@ -51,21 +53,21 @@ User.prototype.save = function(callback){
 //读取用户信息
 User.get = function(mobile, callback){
 	//打开数据库
-	mongodb.open(function(err, db){
+	MongoClient.connect(mongoConnectUrl, function(err, db){
 		if(err){
 			return callback(err);
 		}
 		//读取users集合
 		db.collection('users',function(err, collection){
 			if(err){
-				mongodb.close();
+				db.close();
 				return callback(err);
 			}
 			//查找用户名为name的一个文档
 			collection.findOne({
 				mobile: mobile
 			}, function(err, user){
-				mongodb.close();
+				db.close();
 				if(err){
 					return callback(err);
 				}
@@ -78,19 +80,19 @@ User.get = function(mobile, callback){
 //更新用户信息
 User.update = function(field, data, callback){
 	//打开数据库
-	mongodb.open(function(err, db){
+	MongoClient.connect(mongoConnectUrl, function(err, db){
 		if(err){
 			return callback(err);
 		}
 		//读取users集合
 		db.collection('users',function(err, collection){
 			if(err){
-				mongodb.close();
+				db.close();
 				return callback(err);
 			}
 			//更新用户名为mobile的一个文档
 			collection.update(field, data , {safe:true}, function(err, result){
-				mongodb.close();
+				db.close();
 				if(err){
 					return callback(err);
 				}

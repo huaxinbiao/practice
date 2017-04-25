@@ -13,13 +13,12 @@ module.exports = function(app){
 	　	// 这里是允许跨域的的domain列表
 	  	let origin = req.headers.origin;
 	  	if(allowedOrigins.indexOf(origin) > -1){
-		    res.setHeader('Access-Control-Allow-Origin', origin);
+		    res.header('Access-Control-Allow-Origin', origin);
+	   	 	//res.header('Access-Control-Allow-Origin', '*');
+	   	 	res.header('Access-Control-Allow-Credentials', true);// Allow Cookie
+		  	res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+		  	res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
 	  	}
-	  	
-   	 	//res.header('Access-Control-Allow-Origin', '*');
-   	 	res.header('Access-Control-Allow-Credentials', true);// Allow Cookie
-	  	res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
-	  	res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
 	
 	  	if (req.method == 'OPTIONS') {
 	    	res.sendStatus(200); /*让options请求快速返回*/

@@ -1,6 +1,8 @@
 const validator = require('validator');//表单验证
 const Room = require('../models/room.js');
 const User = require('../models/user.js');
+const Basic = require('../models/basic.js');
+const ObjectID = require('mongodb').ObjectID;
 
 
 /*游戏房间*/
@@ -28,7 +30,7 @@ module.exports = function(app){
 			});;
 		}
 		var user = req.session.user;
-		Room.create({
+		Room.createRoom({
 			name: req.body.name,
 			gamepeople: req.body.playersnumber,
 			owner: user.mobile,
@@ -65,11 +67,21 @@ module.exports = function(app){
 	//获取当前用户房间列表
 	app.get('/room/list', function(req, res){
 		var user = req.session.user;
-		Room.getroom(user.room, function(err, room){
+		let objId = [];
+		for(let key in user.room){
+			let val = ObjectID(user.room[key]);
+			objId.push(val)
+		}
+		//获取房间列表
+		Basic.findData('rooms', {
+			_id: {
+				"$in": objId
+			}
+		}, function(err, room){
 			//当房间创建成功将房间id放入用户信息中
 			if(err){
 				return res.json({
-					code: 200,
+					code: 103,
 					msg: '获取房间列表错误'
 				});
 			}
@@ -80,5 +92,31 @@ module.exports = function(app){
 				msg: '获取房间列表成功'
 			});
 		})
-	})
+	});
+	
+	//快速开始，获取一个未开始的游戏房间
+	app.get('/room/quick', function(req, res){
+		var user = req.session.user;
+		//获取房间列表
+		Basic.findData('rooms', {
+			_id: {
+				"$in": objId
+			}
+		}, function(err, room){
+			//当房间创建成功将房间id放入用户信息中
+			if(err){
+				return res.json({
+					code: 103,
+					msg: '获取房间列表错误'
+				});
+			}
+			res.status(200);
+			res.json({
+				code: 200,
+				data: room,
+				msg: '获取房间列表成功'
+			});
+		})
+	});
+	
 }
