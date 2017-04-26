@@ -33,10 +33,11 @@ module.exports = function(app){
 		Room.createRoom({
 			name: req.body.name,
 			gamepeople: req.body.playersnumber,
-			owner: user.mobile,
+			owner: user._id,
+			ingame: 0,
 			gameuser:[{
 				name: user.name,
-				mobile: user.mobile,
+				_id: user._id,
 				head: user.head,
 				owner: 1
 			}]
@@ -98,23 +99,27 @@ module.exports = function(app){
 	app.get('/room/quick', function(req, res){
 		var user = req.session.user;
 		//获取房间列表
-		Basic.findData('rooms', {
-			_id: {
-				"$in": objId
-			}
-		}, function(err, room){
+		Room.RandomRoom({
+			ingame: 0
+		}, function(err, total, room){
 			//当房间创建成功将房间id放入用户信息中
 			if(err){
 				return res.json({
 					code: 103,
-					msg: '获取房间列表错误'
+					msg: '进入房间失败'
+				});
+			}
+			if(total == 0){
+				return res.json({
+					code: 103,
+					msg: '进入房间失败，自己创建一个吧！'
 				});
 			}
 			res.status(200);
 			res.json({
 				code: 200,
-				data: room,
-				msg: '获取房间列表成功'
+				data: room[0],
+				msg: '进入房间成功'
 			});
 		})
 	});

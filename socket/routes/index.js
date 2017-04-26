@@ -85,7 +85,9 @@ module.exports = function(app){
 			password: password
 		});
 		//检查用户名是否已经存在
-		User.get(newUser.mobile, function(err, user){
+		User.get({
+				mobile: newUser.mobile
+		}, function(err, user){
 			if(err){
 				return res.json({
 					code: 101,
@@ -139,7 +141,9 @@ module.exports = function(app){
 		let password = md5.update(req.body.password).digest('hex');
 		 
 		//获取用户信息
-		User.get(req.body.mobile, function(err, user){
+		User.get({
+				mobile: req.body.mobile
+			}, function(err, user){
 			if(err){
 				return res.json({
 					code: 101,
@@ -213,7 +217,9 @@ module.exports = function(app){
 			return next();
 		}
 		//获取用户信息
-		User.get(req.session.user.mobile, function(err, user){
+		User.get({
+				mobile: req.session.user.mobile
+			}, function(err, user){
 			if(err){
 				return res.json({
 					code: 101,
@@ -228,6 +234,7 @@ module.exports = function(app){
 						msg: 'Token错误'
 					});
 				}
+				req.session.user = user;
 				next();
 			}else{
 				req.session.user = null;

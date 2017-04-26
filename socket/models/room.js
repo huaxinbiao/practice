@@ -18,13 +18,13 @@ exports.createRoom = function (room, callback = function(){}){
 		if(err){
 			return callback(err);
 		}
-		//读取user
+		//读取rooms
 		db.collection('rooms', function(err, collection){
 			if(err){
 				db.close();
 				return callback(err);
 			}
-			//将用户信息插入rooms
+			//插入rooms信息
 			collection.insert(room,{
 				safe: true
 			}, function(err, room){
@@ -32,7 +32,7 @@ exports.createRoom = function (room, callback = function(){}){
 				if(err){
 					return callback(err);
 				}
-				callback(null, room.ops[0]);//成功！err为null，并返回储存后的用户文档
+				callback(null, room.ops[0]);//成功！err为null
 			});
 		});
 	});
@@ -65,7 +65,7 @@ exports.getRoomOne = function (roomId, callback = function(){}){
 }
 
 //随机获取一个未开始游戏的房间
-exports.RandomRoom = function(){
+exports.RandomRoom = function(query, callback = function(){}){
 	MongoClient.connect(mongoConnectUrl, function(err, db){
 		if(err){
 			return callback(err);
@@ -76,29 +76,39 @@ exports.RandomRoom = function(){
 				db.close();
 				return callback(err);
 			}
-	        var query = {};
 	        //使用 count 返回查询的文档数 total
 	        collection.count(query, function (err, total) {
-	            //根据 query 对象查询，并跳过前 (page-1)*strip 个结果，返回之后的 strip 个结果
+	            //根据 query 对象查询，并跳过前skip 个结果，返回之后的 limit 个结果
+	            if(total == 0){
+	            	return callback(null, total);
+	            }
+	            var Random = RandomNum(0, total);
 	            collection.find(query, {
-	              post:0,
-	              comments:0
-	            }, {
-	              skip: (page - 1)*strip,
-	              limit: strip
-	            }).sort({
-	              time: -1
-	            }).toArray(function (err, docs) {
-	              mongodb.close();
+	            	gameuser: 0
+	            },{
+	              skip: Random-1,
+	              limit: 1
+	            }).toArray(function (err, room) {
+	              db.close();
 	              if (err) {
 	                return callback(err);
 	              }
-	              callback(null, docs, total);
+	              callback(null, total, room);
 	            });
 	        });
 		})
 	});
 }
 
+//返回min < r ≤ max随机数
+function RandomNum(Min, Max){
+  	var Range = Max - Min;
+  	var Rand = Math.random();
+  	if(Math.round(Rand * Range) == 0){       
+   	 	return Min + 1;
+  	}
+  	var num = Min + Math.round(Rand * Range);
+  	return num;
+}
 
 

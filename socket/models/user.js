@@ -22,7 +22,8 @@ User.prototype.save = function(callback){
 		password: this.password,
 		time: time,
 		room: [],
-		token: token
+		token: token,
+		nick: nickName()
 	};
 	//打开数据库
 	MongoClient.connect(mongoConnectUrl, function(err, db){
@@ -51,7 +52,7 @@ User.prototype.save = function(callback){
 };
 
 //读取用户信息
-User.get = function(mobile, callback){
+User.get = function(field, callback){
 	//打开数据库
 	MongoClient.connect(mongoConnectUrl, function(err, db){
 		if(err){
@@ -64,9 +65,7 @@ User.get = function(mobile, callback){
 				return callback(err);
 			}
 			//查找用户名为name的一个文档
-			collection.findOne({
-				mobile: mobile
-			}, function(err, user){
+			collection.findOne(field, function(err, user){
 				db.close();
 				if(err){
 					return callback(err);
@@ -101,3 +100,36 @@ User.update = function(field, data, callback){
 		})
 	});
 };
+
+function nickName(){
+	var nickname = ['梦飞蝶幻',
+	'阿蜜儿果小懒',
+	'粉色小懒蝶',
+	'清新的蜜蝶',
+	'梦幻晓璇',
+	'懵懂的小萝莉儿',
+	'凉心的良心',
+	'灰色小懒懒',
+	'冰蓝水蜜桃',
+	'天使之蝶',
+	'偶似晓梦蝶',
+	'懵懵懂懂的晓孩纸',
+	'纸欣梦幻蝶',
+	'懒洋洋地粉涩日纪',
+	'你永遠還不起',
+	'玩笑已过半',
+	'依然、',
+	'你给的失落',
+	'唱情歌的人'];
+	return nickname[RandomNum(0, nickname.length)];
+}
+//返回min < r ≤ max随机数
+function RandomNum(Min, Max){
+  	var Range = Max - Min;
+  	var Rand = Math.random();
+  	if(Math.round(Rand * Range) == 0){       
+   	 	return Min + 1;
+  	}
+  	var num = Min + Math.round(Rand * Range);
+  	return num;
+}
