@@ -83,23 +83,49 @@ exports.RandomRoom = function(query, callback = function(){}){
 	            	return callback(null, total);
 	            }
 	            var Random = RandomNum(0, total);
-	            collection.find(query, {
-	            	gameuser: 0
-	            },{
-	              skip: Random-1,
-	              limit: 1
-	            }).toArray(function (err, room) {
-	              db.close();
-	              if (err) {
-	                return callback(err);
-	              }
-	              callback(null, total, room);
-	            });
+	            //查询未开始游戏的房间，离满足人数最近的房间集合
+		        collection.distinct("gamepeople", query, function(err, number){
+		        	let MaxNumber = Math.max.apply(null, number); //去数组中的最大值
+		        	console.log(MaxNumber)
+		            collection.find(query, {
+		            	gameuser: 0
+		            },{
+		              skip: Random-1,
+		              limit: 1
+		            }).toArray(function (err, room) {
+		              db.close();
+		              if (err) {
+		                return callback(err);
+		              }
+		              callback(null, total, room);
+		            });
+		        })
 	        });
 		})
 	});
 }
 
+//更新房间信息
+exports.updateRoom = function (opation, data, callback){
+	MongoClient.connect(mongoConnectUrl, function(err, db){
+		if(err){
+			return callback(err);
+		}
+		
+		db.collection('rooms', function(err, collection){
+			if(err){
+				db.close();
+				return callback(err);
+			}
+		
+			collection.updateOne(opation, data, function(err, result) {
+				db.close();
+				callback(err, result);
+			});
+		});
+
+	});
+}
 //返回min < r ≤ max随机数
 function RandomNum(Min, Max){
   	var Range = Max - Min;
@@ -110,5 +136,4 @@ function RandomNum(Min, Max){
   	var num = Min + Math.round(Rand * Range);
   	return num;
 }
-
 

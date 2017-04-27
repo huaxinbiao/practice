@@ -51,7 +51,21 @@ module.exports = function(io){
 			    		content: user.nick + '进入房间',
 			    		source: 2
 		    		});
-		    		
+		    		//将用户加入房间用户列表，房间在线人数加1
+		    		Room.updateRoom({
+						_id: ObjectID(roomId)
+					}, {
+						$inc:{online: 1},
+						$addToSet:{
+							gameuser: {
+								name: user.name,
+								_id: user._id,
+								head: user.head
+							}
+						}
+					}, function(err, result){
+						
+					})
 		    		//'$addToSet'这个方法向数组中增加值。$addToSet’,'$each’的组合方式添加多个值到数组中
 		    		//当用户进入过一个房间自动保存到用户的房间列表中
 		    		User.update({
