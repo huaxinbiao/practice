@@ -1,6 +1,6 @@
 /*
  * 游戏房间
- * 房间名称，创建时间，可容纳游戏人数，可容纳围观人数,房间用户基本信息的数组,1房主
+ * 房间名称，创建时间，可容纳游戏人数，可容纳围观人数,房间用户基本信息的数组,房主
  * name,time,gamepeople,watchpeople,gameuser,owner
  */
 const mongodb = require('./db');
@@ -76,31 +76,31 @@ exports.RandomRoom = function(query, callback = function(){}){
 				db.close();
 				return callback(err);
 			}
-	        //使用 count 返回查询的文档数 total
-	        collection.count(query, function (err, total) {
-	            //根据 query 对象查询，并跳过前skip 个结果，返回之后的 limit 个结果
-	            if(total == 0){
-	            	return callback(null, total);
-	            }
-	            var Random = RandomNum(0, total);
-	            //查询未开始游戏的房间，离满足人数最近的房间集合
-		        collection.distinct("gamepeople", query, function(err, number){
-		        	let MaxNumber = Math.max.apply(null, number); //去数组中的最大值
-		        	console.log(MaxNumber)
+            //查询未开始游戏的房间，离满足人数最近的房间集合,below离0最近表示需要的人最少，below小于0表示人数超过游戏需要人数
+            //distinct查询below拥有几种值
+	        collection.distinct("below", query, function(err, number){
+	        	let MixNumber = MathMin(number); //获取离满足房间人数最近的数
+	        	query.below = MixNumber;
+	        	console.log(MixNumber)
+		        //使用 count 返回查询的文档数 total
+		        collection.count(query, function (err, total) {
+		            //根据 query 对象查询，并跳过前skip 个结果，返回之后的 limit 个结果
+		            if(total == 0){
+		            	return callback(null, total);
+		            }
+		            var Random = RandomNum(0, total);
 		            collection.find(query, {
-		            	gameuser: 0
-		            },{
-		              skip: Random-1,
-		              limit: 1
+		              	skip: Random-1,
+		              	limit: 1
 		            }).toArray(function (err, room) {
-		              db.close();
-		              if (err) {
-		                return callback(err);
-		              }
-		              callback(null, total, room);
+		              	db.close();
+		              	if (err) {
+		                	return callback(err);
+		              	}
+		              	callback(null, total, room);
 		            });
-		        })
-	        });
+		        });
+	        })
 		})
 	});
 }
@@ -137,3 +137,12 @@ function RandomNum(Min, Max){
   	return num;
 }
 
+//去除数组中的负数，返回最小值
+function MathMin(arr){
+	for(k in arr){
+		if(arr[k] < 0){
+			arr.splice(k,1);
+		}
+	};
+	return Math.min.apply(null, arr);
+}

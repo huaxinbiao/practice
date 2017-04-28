@@ -10,9 +10,9 @@ const chatMessage = []; //暂存用户聊天消息
 module.exports = function(io){	
 	//socket连接成功之后触发，用于初始化
 	io.sockets.on('connection', function(socket){
-		console.log('连接成功')
-		var user = socket.request.session.user;
-		var roomId = null;
+		var user = socket.request.session.user;  //获取session
+		console.log(user)
+		var roomId = null;  //当前进入的房间id，进入房间赋值离开房间清除
 		if(!user){
 			socket.emit('nologin', {login: 0});
 			socket.disconnect();
@@ -51,17 +51,16 @@ module.exports = function(io){
 			    		content: user.nick + '进入房间',
 			    		source: 2
 		    		});
-		    		//将用户加入房间用户列表，房间在线人数加1
+		    		//将用户加入房间用户列表，房间在线人数加1，满足房间人数-1
 		    		Room.updateRoom({
 						_id: ObjectID(roomId)
 					}, {
-						$inc:{online: 1},
+						$inc:{
+							online: 1,
+							below: -1,
+						},
 						$addToSet:{
-							gameuser: {
-								name: user.name,
-								_id: user._id,
-								head: user.head
-							}
+							gameuser: ObjectID(user._id)
 						}
 					}, function(err, result){
 						
@@ -85,6 +84,23 @@ module.exports = function(io){
 	    		});
 	    	}
 	    });
+	    
+	    //离开房间、此方法不将用户移出房间，只是判断用户离开房间页面
+	    socket.on('leaveRoom', function(){
+	    	console.log(roomId);
+	    	//用户离开房间页面，房间在线人数加-1，满足房间人数+1
+    		Room.updateRoom({
+				_id: ObjectID(roomId)
+			}, {
+				$inc:{
+					online: -1,
+					below: 1,
+				}
+			}, function(err, result){
+				
+			})
+	    	roomId = null;
+	    })
 	    
 	    //用户发送的画图坐标
 	    socket.on('createMessage', function(message){
@@ -117,8 +133,21 @@ module.exports = function(io){
 	    
 	    //断开连接监听
 	    socket.on('disconnect', function(message){
-	        //断开连接
-	        console.log(message)
+	        console.log(roomId);
+	        //当用户断开连接，是在房间页面断线，房间在线人数加-1，满足房间人数+1
+	        if(roomId){
+	    		Room.updateRoom({
+					_id: ObjectID(roomId)
+				}, {
+					$inc:{
+						online: -1,
+						below: 1,
+					}
+				}, function(err, result){
+					
+				})
+		    	roomId = null;
+	        }
 	    });
 	    
 	});

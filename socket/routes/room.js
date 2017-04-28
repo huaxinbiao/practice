@@ -30,17 +30,16 @@ module.exports = function(app){
 			});;
 		}
 		var user = req.session.user;
+		//房间名字 、几人房、进入在线房间人数、差几人开始满足游戏人数、已准备人数、房主id、游戏开始状态、保存该房间的用户
 		Room.createRoom({
 			name: req.body.name,
 			gamepeople: req.body.playersnumber,
+			online: 0,
+			below: req.body.playersnumber,
+			ready: 0,
 			owner: user._id,
 			ingame: 0,
-			gameuser:[{
-				name: user.name,
-				_id: user._id,
-				head: user.head,
-				owner: 1
-			}]
+			gameuser:[user._id]
 		}, function(err, room){
 			//当房间创建成功将房间id放入用户信息中
 			complete = true;
