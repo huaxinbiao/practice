@@ -81,7 +81,6 @@ exports.RandomRoom = function(query, callback = function(){}){
 	        collection.distinct("below", query, function(err, number){
 	        	let MixNumber = MathMin(number); //获取离满足房间人数最近的数
 	        	query.below = MixNumber;
-	        	console.log(MixNumber)
 		        //使用 count 返回查询的文档数 total
 		        collection.count(query, function (err, total) {
 		            //根据 query 对象查询，并跳过前skip 个结果，返回之后的 limit 个结果
