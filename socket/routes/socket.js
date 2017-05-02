@@ -123,6 +123,20 @@ module.exports = function(io){
 			}, function(err, result){
 				
 			})
+    		//取消在线
+    		if(!onlineNum[roomId]){onlineNum[roomId] = []};
+    		for(let key in onlineNum[roomId]){
+    			if(onlineNum[roomId][key].id == user._id){
+    				onlineNum[roomId][key].ready = false;
+    			}
+    		}
+    		//取消准备
+    		for(let key in readyNum[roomId]['gameNum']){
+    			if(readyNum[roomId]['gameNum'][key] == user._id){
+    				readyNum[roomId]['gameNum'].splice(key, 1);
+    			}
+    		}
+    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 	    	roomId = null;
 	    })
 	    
@@ -200,7 +214,6 @@ module.exports = function(io){
 	    
 	    //断开连接监听
 	    socket.on('disconnect', function(message){
-	        console.log(roomId);
 	    	//离开房间删除
 	    	for(let key in onlineNum[roomId]){
 	    		if(user._id == onlineNum[roomId][key].id){
