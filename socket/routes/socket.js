@@ -36,18 +36,24 @@ module.exports = function(io){
 			    			msg: '获取房间错误'
 			    		});
 		    		}
-		    		//房间存在将用户加入房间
-		    		socket.join(message.room_id);
+		    		//房间存在,将用户加入房间
+		    		socket.join(room._id);
+		    		//'$addToSet'这个方法向数组中增加值。$addToSet’,'$each’的组合方式添加多个值到数组中
+		    		//当用户进入过一个房间自动保存到用户的房间列表中
+		    		User.update({
+						mobile: user.mobile
+					}, {
+						$addToSet:{
+							room: ObjectID(message.room_id)
+						}
+					}, function(err, result){
+						
+					})
 		    		//为房间建立数组存放消息
-		    		roomId = message.room_id;
+		    		roomId = room._id;
 		    		if(!Messages[roomId]){
 		    			Messages[roomId] = [];
 		    		}
-		    		fn({
-		    			code: 200,
-		    			data: room,
-		    			msg: '进入房间成功'
-		    		});
 		    		//发送进入房间通知
 		    		io.sockets.in(roomId).emit('userMessage', {
 			    		content: user.nick + '进入房间',
@@ -56,15 +62,17 @@ module.exports = function(io){
 			    		nick: user.nick
 		    		});
 		    		//发送上线的用户信息
-		    		if(!onlineNum[roomId]){onlineNum[roomId] = []};
+		    		if(!onlineNum[roomId]){
+		    			onlineNum[roomId] = []
+	    			};
 		    		onlineNum[roomId].push({
 		    			id: user._id,
-			    		head: '',
+			    		head: user.head,
 			    		nick: user.nick,
 			    		ready: false
 		    		})
 		    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
-		    		//满足游戏房间人数
+		    		//满足游戏de房间人数
 		    		if(!readyNum[roomId]){
 		    			readyNum[roomId] = [];
 		    			readyNum[roomId]['start'] = room.gamepeople;
@@ -83,17 +91,18 @@ module.exports = function(io){
 					}, function(err, result){
 						
 					})
-		    		//'$addToSet'这个方法向数组中增加值。$addToSet’,'$each’的组合方式添加多个值到数组中
-		    		//当用户进入过一个房间自动保存到用户的房间列表中
-		    		User.update({
-						mobile: user.mobile
-					}, {
-						$addToSet:{
-							room: ObjectID(message.room_id)
-						}
-					}, function(err, result){
-						
-					})
+		    		if(room.ingame == 1){
+		    			return fn({
+			    			code: 201,
+			    			data: room,
+			    			msg: '游戏已经开始，请先观战！'
+			    		});
+		    		}
+		    		fn({
+		    			code: 200,
+		    			data: room,
+		    			msg: '进入房间成功'
+		    		});
 		    	})
 	    	}else{
 	    		fn({
@@ -105,7 +114,9 @@ module.exports = function(io){
 	    
 	    //离开房间、此方法不将用户移出房间，只是判断用户离开房间页面
 	    socket.on('leaveRoom', function(){
-	    	//离开房间删除
+	    	//离开房间从在线列表删除
+    		if(!onlineNum[roomId]){onlineNum[roomId] = []};
+    		if(!readyNum[roomId]){readyNum[roomId] = []};
 	    	for(let key in onlineNum[roomId]){
 	    		if(user._id == onlineNum[roomId][key].id){
 	    			onlineNum[roomId].splice(key, 1);
@@ -123,13 +134,6 @@ module.exports = function(io){
 			}, function(err, result){
 				
 			})
-    		//取消在线
-    		if(!onlineNum[roomId]){onlineNum[roomId] = []};
-    		for(let key in onlineNum[roomId]){
-    			if(onlineNum[roomId][key].id == user._id){
-    				onlineNum[roomId][key].ready = false;
-    			}
-    		}
     		//取消准备
     		for(let key in readyNum[roomId]['gameNum']){
     			if(readyNum[roomId]['gameNum'][key] == user._id){
@@ -141,12 +145,13 @@ module.exports = function(io){
 	    })
 	    
 	    //用户进入房间准备/取消准备
-	    socket.on('readygame', function(message){
+	    socket.on('readygame', function(message){ 
 	    	if(message.ready){
 	    		//需要满足准备人数
 	    		var gameNum = readyNum[roomId]['start'];
 	    		if(!onlineNum[roomId]){onlineNum[roomId] = []};
 	    		if(!readyNum[roomId]['gameNum']){readyNum[roomId]['gameNum'] = []};
+	    		if(!readyNum[roomId]['socketId']){readyNum[roomId]['socketId'] = []};
 	    		console.log(gameNum)
 	    		console.log(readyNum[roomId]['gameNum'].length)
 	    		if(readyNum[roomId] && readyNum[roomId]['gameNum'].length < gameNum){
@@ -155,25 +160,36 @@ module.exports = function(io){
 		    			if(onlineNum[roomId][key].id == user._id){
 		    				onlineNum[roomId][key].ready = true;
 		    				readyNum[roomId]['gameNum'].push(user._id);
+		    				readyNum[roomId]['socketId'].push(socket.id); //用于单人发消息
 		    			}
 		    		}
-	    			//开始游戏
+	    			//开始游戏、、写入数据库
 		    		if(readyNum[roomId]['gameNum'].length == gameNum){
-		    			io.sockets.in(roomId).emit('startGame');
+		    			Room.updateRoom({
+							_id: ObjectID(roomId)
+						}, {
+							$set:{ingame: 1}
+						}, function(err, result){
+							io.sockets.in(roomId).emit('startGame', {
+								gameNum: readyNum[roomId]['gameNum']
+							});
+							//第一个人开始画
+							startDraw(0);
+						})
 		    		}
 	    		}else{
 	    			return false;
 	    		}
 	    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 	    	}else{
-	    		//取消
+	    		//取消准备
 	    		if(!onlineNum[roomId]){onlineNum[roomId] = []};
 	    		for(let key in onlineNum[roomId]){
 	    			if(onlineNum[roomId][key].id == user._id){
 	    				onlineNum[roomId][key].ready = false;
 	    			}
 	    		}
-	    		//取消准备
+	    		//从准备数组中删除
 	    		for(let key in readyNum[roomId]['gameNum']){
 	    			if(readyNum[roomId]['gameNum'][key] == user._id){
 	    				readyNum[roomId]['gameNum'].splice(key, 1);
@@ -186,7 +202,6 @@ module.exports = function(io){
 	    //用户发送的画图坐标
 	    socket.on('createMessage', function(message){
 	        //用户向服务器发送消息，存放到messages
-		    console.log(roomId);
 	        Messages[roomId].push(message);
 	        //向房间内除自己外的所有用户发送消息
 	        socket.broadcast.to(roomId).emit('messageAdded', message);
@@ -245,5 +260,29 @@ module.exports = function(io){
 	        }
 	    });
 	    
+	    //
+	    function startDraw(ci){
+	    	console.log(readyNum[roomId]['socketId'])
+	    	socket.broadcast.to(readyNum[roomId]['socketId'][ci]).emit('startDraw', {
+	    		my: readyNum[roomId]['start']
+    		});
+	    	setTimeout(function(){
+	    		Room.updateRoom({
+					_id: ObjectID(roomId)
+				}, {
+					$set:{ingame: 0}
+				}, function(err, result){
+		    		//取消准备
+		    		for(let key in onlineNum[roomId]){
+	    				onlineNum[roomId][key].ready = false;
+		    		}
+		    		//从准备数组中删除
+		    		readyNum[roomId]['gameNum'] = [];
+					readyNum[roomId]['socketId'] = [];
+		    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
+					io.sockets.in(roomId).emit('endGame');
+				})
+	    	}, 60000)
+	    }
 	});
 }

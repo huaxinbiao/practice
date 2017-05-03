@@ -15,7 +15,7 @@ module.exports = function(app){
 			});
 		}
 		
-		if([4,6,8,10].indexOf(parseInt(req.body.playersnumber)) == -1){
+		if([2,4,6,8,10].indexOf(parseInt(req.body.playersnumber)) == -1){
 			return res.json({
 				code: 103,
 				msg: '游戏人数不正确'
