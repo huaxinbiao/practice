@@ -3,6 +3,7 @@ const Room = require('../models/room.js');
 const User = require('../models/user.js');
 const MongoClient = require('mongodb');
 const ObjectID = require('mongodb').ObjectID;
+const Vocable = require('./vocable.js');
 
 const Messages = []; //暂时存放画图坐标消息
 const chatMessage = []; //暂存用户聊天消息
@@ -13,7 +14,6 @@ module.exports = function(io){
 	//socket连接成功之后触发，用于初始化
 	io.sockets.on('connection', function(socket){
 		var user = socket.request.session.user;  //获取session
-		console.log(user)
 		var roomId = null;  //当前进入的房间id，进入房间赋值离开房间清除
 		if(!user){
 			socket.emit('nologin', {login: 0});
@@ -94,13 +94,19 @@ module.exports = function(io){
 		    		if(room.ingame == 1){
 		    			return fn({
 			    			code: 201,
-			    			data: room,
+			    			data: {
+			    				room: room,
+			    				id: null
+			    			},
 			    			msg: '游戏已经开始，请先观战！'
 			    		});
 		    		}
 		    		fn({
 		    			code: 200,
-		    			data: room,
+		    			data: {
+		    				room: room,
+		    				id: socket.id
+		    			},
 		    			msg: '进入房间成功'
 		    		});
 		    	})
@@ -136,7 +142,7 @@ module.exports = function(io){
 			})
     		//取消准备
     		for(let key in readyNum[roomId]['gameNum']){
-    			if(readyNum[roomId]['gameNum'][key] == user._id){
+    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
     				readyNum[roomId]['gameNum'].splice(key, 1);
     			}
     		}
@@ -148,23 +154,23 @@ module.exports = function(io){
 	    socket.on('readygame', function(message){ 
 	    	if(message.ready){
 	    		//需要满足准备人数
-	    		var gameNum = readyNum[roomId]['start'];
+	    		if(!readyNum[roomId]){readyNum[roomId] = []};
+	    		let gameStartP = readyNum[roomId]['start'];
 	    		if(!onlineNum[roomId]){onlineNum[roomId] = []};
 	    		if(!readyNum[roomId]['gameNum']){readyNum[roomId]['gameNum'] = []};
-	    		if(!readyNum[roomId]['socketId']){readyNum[roomId]['socketId'] = []};
-	    		console.log(gameNum)
-	    		console.log(readyNum[roomId]['gameNum'].length)
-	    		if(readyNum[roomId] && readyNum[roomId]['gameNum'].length < gameNum){
+	    		if(readyNum[roomId] && readyNum[roomId]['gameNum'].length < gameStartP){
 	    			//准备
 		    		for(let key in onlineNum[roomId]){
 		    			if(onlineNum[roomId][key].id == user._id){
 		    				onlineNum[roomId][key].ready = true;
-		    				readyNum[roomId]['gameNum'].push(user._id);
-		    				readyNum[roomId]['socketId'].push(socket.id); //用于单人发消息
+		    				readyNum[roomId]['gameNum'].push({
+		    					userId: user._id,
+		    					socketId: socket.id //用于单人发消息
+	    					});
 		    			}
 		    		}
 	    			//开始游戏、、写入数据库
-		    		if(readyNum[roomId]['gameNum'].length == gameNum){
+		    		if(readyNum[roomId]['gameNum'].length == gameStartP){
 		    			Room.updateRoom({
 							_id: ObjectID(roomId)
 						}, {
@@ -191,7 +197,7 @@ module.exports = function(io){
 	    		}
 	    		//从准备数组中删除
 	    		for(let key in readyNum[roomId]['gameNum']){
-	    			if(readyNum[roomId]['gameNum'][key] == user._id){
+	    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
 	    				readyNum[roomId]['gameNum'].splice(key, 1);
 	    			}
 	    		}
@@ -238,7 +244,7 @@ module.exports = function(io){
     		//取消准备
 	    	if(readyNum[roomId]){
 	    		for(let key in readyNum[roomId]['gameNum']){
-	    			if(readyNum[roomId]['gameNum'][key] == user._id){
+	    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
 	    				readyNum[roomId]['gameNum'].splice(key, 1);
 	    			}
 	    		}
@@ -260,13 +266,31 @@ module.exports = function(io){
 	        }
 	    });
 	    
-	    //
-	    function startDraw(ci){
-	    	console.log(readyNum[roomId]['socketId'])
-	    	socket.broadcast.to(readyNum[roomId]['socketId'][ci]).emit('startDraw', {
-	    		my: readyNum[roomId]['start']
-    		});
-	    	setTimeout(function(){
+	    //倒计时
+	    function countDown(i, number){
+	    	io.sockets.in(roomId).emit('countDown', {
+	    		count: --i,
+	    		number: number
+	    	});
+	    	if(i > 0){
+	    		if(Messages[roomId].length < 1 && i == 60){
+	    			startDraw(number, true);
+	    		}else{
+		    		setTimeout(function(){
+		    			countDown(i, number);
+		    		}, 1000);
+	    		}
+	    	}else{
+	    		startDraw(number);
+	    	}
+	    }
+	    
+	    //开始游戏
+	    function startDraw(ci, no){
+    		//清除画布信息
+    		Messages[roomId] = [];
+	    	if(ci >= readyNum[roomId]['start']){
+	    		//游戏结束
 	    		Room.updateRoom({
 					_id: ObjectID(roomId)
 				}, {
@@ -278,11 +302,39 @@ module.exports = function(io){
 		    		}
 		    		//从准备数组中删除
 		    		readyNum[roomId]['gameNum'] = [];
-					readyNum[roomId]['socketId'] = [];
 		    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 					io.sockets.in(roomId).emit('endGame');
 				})
-	    	}, 60000)
+	    	}else{
+	    		//随机取四个词语
+	    		var gameVocable = []
+	    		for(let key in Vocable){
+	    			let i = RandomNum(0, Vocable.length);
+	    			var j = RandomNum(0, Vocable[i].length);
+	    			gameVocable.push(Vocable[i][j]);
+	    		}
+	    		//下一位
+	    		io.sockets.in(readyNum[roomId]['gameNum'][ci].socketId).emit('Vocable', {
+	    			vocable: gameVocable
+	    		});
+	    		io.sockets.in(readyNum[roomId]['gameNum'][ci].socketId).emit('onlineNum', onlineNum[roomId]);
+	    		//no=true没有反应开始下一位
+				io.sockets.in(roomId).emit('nextBit', {
+	    			type: 'clearCanvas',
+	    			no: no,
+	    			count: ci,
+	    			id: readyNum[roomId]['gameNum'][ci].socketId
+	    		});
+		    	countDown(90, ++ci);
+	    	}
 	    }
+	    
+	    //返回min ≤ r < max随机数
+		function RandomNum(Min, Max){
+		  	var Range = Max - Min;
+	      	var Rand = Math.random();
+	      	var num = Min + Math.floor(Rand * Range); //舍去
+	      	return num;
+		}
 	});
 }
