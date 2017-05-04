@@ -263,25 +263,31 @@ module.exports = function(io){
 	    //
 	    function startDraw(ci){
 	    	console.log(readyNum[roomId]['socketId'])
+	    	console.log(readyNum[roomId]['socketId'][ci])
 	    	socket.broadcast.to(readyNum[roomId]['socketId'][ci]).emit('startDraw', {
 	    		my: readyNum[roomId]['start']
     		});
 	    	setTimeout(function(){
-	    		Room.updateRoom({
-					_id: ObjectID(roomId)
-				}, {
-					$set:{ingame: 0}
-				}, function(err, result){
-		    		//取消准备
-		    		for(let key in onlineNum[roomId]){
-	    				onlineNum[roomId][key].ready = false;
-		    		}
-		    		//从准备数组中删除
-		    		readyNum[roomId]['gameNum'] = [];
-					readyNum[roomId]['socketId'] = [];
-		    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
-					io.sockets.in(roomId).emit('endGame');
-				})
+	    		ci++
+	    		if(ci < readyNum[roomId]['start']){
+	    			startDraw(ci);
+	    		}else{
+		    		Room.updateRoom({
+						_id: ObjectID(roomId)
+					}, {
+						$set:{ingame: 0}
+					}, function(err, result){
+			    		//取消准备
+			    		for(let key in onlineNum[roomId]){
+		    				onlineNum[roomId][key].ready = false;
+			    		}
+			    		//从准备数组中删除
+			    		readyNum[roomId]['gameNum'] = [];
+						readyNum[roomId]['socketId'] = [];
+			    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
+						io.sockets.in(roomId).emit('endGame');
+					})
+	    		}
 	    	}, 60000)
 	    }
 	});
