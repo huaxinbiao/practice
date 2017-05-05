@@ -96,7 +96,8 @@ module.exports = function(io){
 			    			code: 201,
 			    			data: {
 			    				room: room,
-			    				id: null
+			    				id: socket.id,
+			    				gameNum: readyNum[roomId]['gameNum']
 			    			},
 			    			msg: '游戏已经开始，请先观战！'
 			    		});
@@ -135,16 +136,18 @@ module.exports = function(io){
 			}, {
 				$inc:{
 					online: -1,
-					below: 1,
+					below: 1
 				}
 			}, function(err, result){
 				
 			})
     		//取消准备
-    		for(let key in readyNum[roomId]['gameNum']){
-    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
-    				readyNum[roomId]['gameNum'].splice(key, 1);
-    			}
+    		if(readyNum[roomId] && !readyNum[roomId]['current']){
+	    		for(let key in readyNum[roomId]['gameNum']){
+	    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
+	    				readyNum[roomId]['gameNum'].splice(key, 1);
+	    			}
+	    		}
     		}
     		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 	    	roomId = null;
@@ -196,10 +199,12 @@ module.exports = function(io){
 	    			}
 	    		}
 	    		//从准备数组中删除
-	    		for(let key in readyNum[roomId]['gameNum']){
-	    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
-	    				readyNum[roomId]['gameNum'].splice(key, 1);
-	    			}
+	    		if(readyNum[roomId] && !readyNum[roomId]['current']){
+		    		for(let key in readyNum[roomId]['gameNum']){
+		    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
+		    				readyNum[roomId]['gameNum'].splice(key, 1);
+		    			}
+		    		}
 	    		}
 	    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 	    	}
@@ -207,15 +212,31 @@ module.exports = function(io){
 	    
 	    //用户发送的画图坐标
 	    socket.on('createMessage', function(message){
+	    	//判断是否当前用户发送的
+	    	if(!readyNum[roomId] || readyNum[roomId]['current'] != socket.id){
+	    		return false;
+	    	}
 	        //用户向服务器发送消息，存放到messages
 	        Messages[roomId].push(message);
 	        //向房间内除自己外的所有用户发送消息
 	        socket.broadcast.to(roomId).emit('messageAdded', message);
 	    });
 	    
+	    //用户选择词语
+	    socket.on('setVocable', function(message){
+	    	readyNum[roomId]['vocable'] = message;
+	    })
+	    
 	    //用户进入房间，获取已存在的房间消息，与画图坐标
 	    socket.on('getAllMessages', function(){
-	        socket.emit('allMessages', Messages[roomId]);
+	    	let vocable = null;
+	    	if(readyNum[roomId] && readyNum[roomId]['vocable'] && readyNum[roomId]['current'] == socket.id){
+	    		vocable = readyNum[roomId]['vocable']
+	    	}
+	        socket.emit('allMessages', {
+	        	draw: Messages[roomId],
+	        	vocable: vocable
+	        });
 	    });
 	    
 	    //用户发送的聊天信息
@@ -242,7 +263,7 @@ module.exports = function(io){
 	    		}
 	    	}
     		//取消准备
-	    	if(readyNum[roomId]){
+	    	if(readyNum[roomId] && !readyNum[roomId]['current']){
 	    		for(let key in readyNum[roomId]['gameNum']){
 	    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
 	    				readyNum[roomId]['gameNum'].splice(key, 1);
@@ -262,7 +283,7 @@ module.exports = function(io){
 				}, function(err, result){
 					
 				})
-		    	roomId = null;
+		    	//roomId = null;
 	        }
 	    });
 	    
@@ -273,7 +294,20 @@ module.exports = function(io){
 	    		number: number
 	    	});
 	    	if(i > 0){
-	    		if(Messages[roomId].length < 1 && i == 60){
+	    		//发送第一次提示
+	    		if(readyNum[roomId] && readyNum[roomId]['vocable'] && i == 55){
+	    			io.sockets.in(roomId).emit('vocablePrompt', {
+			    		prompt: readyNum[roomId]['vocable'][1][0]
+			    	});
+	    		}
+	    		//发送第二次提示
+	    		if(readyNum[roomId] && readyNum[roomId]['vocable'] && i == 30){
+	    			io.sockets.in(roomId).emit('vocablePrompt', {
+			    		prompt: readyNum[roomId]['vocable'][1][1]
+			    	});
+	    		}
+	    		//25秒内没有操作换下一位用户
+	    		if(Messages[roomId] && Messages[roomId].length < 1 && i == 65){
 	    			startDraw(number, true);
 	    		}else{
 		    		setTimeout(function(){
@@ -301,6 +335,8 @@ module.exports = function(io){
 	    				onlineNum[roomId][key].ready = false;
 		    		}
 		    		//从准备数组中删除
+		    		readyNum[roomId]['vocable'] = null;
+		    		readyNum[roomId]['current'] = null;
 		    		readyNum[roomId]['gameNum'] = [];
 		    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 					io.sockets.in(roomId).emit('endGame');
@@ -314,6 +350,10 @@ module.exports = function(io){
 	    			gameVocable.push(Vocable[i][j]);
 	    		}
 	    		//下一位
+	    		if(!readyNum[roomId]['gameNum']){
+	    			return startDraw(readyNum[roomId]['start']);
+	    		}
+	    		readyNum[roomId]['current'] = readyNum[roomId]['gameNum'][ci].socketId;
 	    		io.sockets.in(readyNum[roomId]['gameNum'][ci].socketId).emit('Vocable', {
 	    			vocable: gameVocable
 	    		});
