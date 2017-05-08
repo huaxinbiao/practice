@@ -227,6 +227,17 @@ module.exports = function(io){
 	    	readyNum[roomId]['vocable'] = message;
 	    })
 	    
+	    //用户清除画布
+	    socket.on('resetCanvas', function(){
+	    	//判断是否当前用户发送的
+	    	if(!readyNum[roomId] || readyNum[roomId]['current'] != socket.id){
+	    		return false;
+	    	}
+	    	Messages[roomId] = [];
+	        //向房间内除自己外的所有用户发送消息
+	        socket.broadcast.to(roomId).emit('resetCanvas');
+	    });
+	    
 	    //用户进入房间，获取已存在的房间消息，与画图坐标
 	    socket.on('getAllMessages', function(){
 	    	let vocable = null;
@@ -295,13 +306,13 @@ module.exports = function(io){
 	    	});
 	    	if(i > 0){
 	    		//发送第一次提示
-	    		if(readyNum[roomId] && readyNum[roomId]['vocable'] && i == 55){
+	    		if(readyNum[roomId] && readyNum[roomId]['vocable'] && i == 60){
 	    			io.sockets.in(roomId).emit('vocablePrompt', {
 			    		prompt: readyNum[roomId]['vocable'][1][0]
 			    	});
 	    		}
 	    		//发送第二次提示
-	    		if(readyNum[roomId] && readyNum[roomId]['vocable'] && i == 30){
+	    		if(readyNum[roomId] && readyNum[roomId]['vocable'] && i == 35){
 	    			io.sockets.in(roomId).emit('vocablePrompt', {
 			    		prompt: readyNum[roomId]['vocable'][1][1]
 			    	});
