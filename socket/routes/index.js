@@ -219,6 +219,9 @@ module.exports = function(app){
 		if(url == '/outlogin'){
 			return next();
 		}
+		if(!token){
+			return false;
+		}
 		//获取用户信息
 		User.get({
 				mobile: req.session.user.mobile

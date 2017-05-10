@@ -25,7 +25,7 @@ module.exports = function(app){
 	  	}else {
 	  		next();
 	  	}*/
-	  	next();
+		next();
 	})
 	app.all('*', checkToken);
 	
@@ -199,6 +199,7 @@ module.exports = function(app){
 	//页面权限控制
 	function checkToken(req, res, next){
 		let url = req.url.split("?")[0];
+		console.log("2222222222222222222222222222222222222222222");
 		console.log(req.session);
 		if(url == '/login' || url == '/reg' || url == '/code' || url == '/' || url == '/index'){
 			return next();
@@ -218,6 +219,9 @@ module.exports = function(app){
 		if(url == '/outlogin'){
 			return next();
 		}
+		if(!token){
+			return false;
+		}
 		//获取用户信息
 		User.get({
 				mobile: req.session.user.mobile
@@ -230,6 +234,7 @@ module.exports = function(app){
 			}
 			if(user){
 				if(user.token != token){
+		console.log("33333333333333333333333333333333333333333333");
 					req.session.user = null;
 					return res.json({
 						code: 104,
