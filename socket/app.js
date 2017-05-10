@@ -30,8 +30,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //session
 var sessionMiddleware = session({
     resave: true,  //是否允许session重新设置，要保证session有操作的时候更新session必须设置这个属性为true
-    rolling: true, //是否按照原设定的maxAge值重设session同步到cookie中，要保证session有操作的时候必须设置这个属性为true
-    saveUninitialized: false,  //是否设置session在存储容器中可以给修改
+    rolling: true, //是否按照原设定的maxAge值重设session同步到cookie中，要保证session有操作的时候必须设置这个属性为true*/
+    saveUninitialized: true,  //是否设置session在存储容器中可以给修改
 	secret: settings.cookieSecret,
 	key: settings.db,//cookie name
 	cookie: {maxAge:1000 * 60 * 60 * 24 * 30},//30天

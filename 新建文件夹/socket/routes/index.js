@@ -25,7 +25,6 @@ module.exports = function(app){
 	  	}else {
 	  		next();
 	  	}*/
-   	 	res.header('Access-Control-Allow-Credentials', true);// Allow Cookie
 	  	next();
 	})
 	app.all('*', checkToken);
@@ -200,7 +199,6 @@ module.exports = function(app){
 	//页面权限控制
 	function checkToken(req, res, next){
 		let url = req.url.split("?")[0];
-		console.log(req.session.id);
 		console.log(req.session);
 		if(url == '/login' || url == '/reg' || url == '/code' || url == '/' || url == '/index'){
 			return next();
