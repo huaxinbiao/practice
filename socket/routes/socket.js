@@ -6,7 +6,7 @@ const ObjectID = require('mongodb').ObjectID;
 const Vocable = require('./vocable.js');
 
 const Messages = []; //暂时存放画图坐标消息
-const chatMessage = []; //暂存用户聊天消息
+const chatMessage = []; //暂存房间聊天信息，游戏结束时将消息存入数据库
 const onlineNum = []; //在线列表
 const readyNum = []; //准备列表
 
@@ -55,7 +55,7 @@ module.exports = function(io){
 		    			Messages[roomId] = [];
 		    		}
 		    		//发送进入房间通知
-		    		io.sockets.in(roomId).emit('userMessage', {
+		    		socket.broadcast.to(roomId).emit('userMessage', {
 			    		content: user.nick + '进入房间',
 			    		source: 2,
 			    		head: '',
@@ -150,7 +150,7 @@ module.exports = function(io){
 	    		}
     		}
     		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
-	    	roomId = null;
+	    	//roomId = null;
 	    })
 	    
 	    //用户进入房间准备/取消准备
@@ -244,19 +244,47 @@ module.exports = function(io){
 	    	if(readyNum[roomId] && readyNum[roomId]['vocable'] && readyNum[roomId]['current'] == socket.id){
 	    		vocable = readyNum[roomId]['vocable']
 	    	}
-	        socket.emit('allMessages', {
-	        	draw: Messages[roomId],
-	        	vocable: vocable
-	        });
+	    	
+	    	//获取数据库中的房间聊天消息
+	    	//******翻页功能待开发*****//
+	    	Room.getRoomNews({
+				_id: ObjectID(roomId)
+			}, { 
+				chatmessage: {$slice: -100}
+			}, function(err, result){
+				if(err){
+					return 
+				}
+		    	if(!chatMessage[roomId]){
+		    		chatMessage[roomId] = [];
+		    	}
+		    	if(!result.chatmessage){
+		    		result.chatmessage = [];
+		    	}
+		    	let chat = [...result.chatmessage, ...chatMessage[roomId]];
+		        socket.emit('allMessages', {
+		        	draw: Messages[roomId],
+		        	vocable: vocable,
+		        	chatMessage: chat
+		        });
+			})
 	    });
 	    
 	    //用户发送的聊天信息
 	    socket.on('chatMessage', function(message, fn){
-	    	if(message.source == 1){
-	    		message.source = 2;
+	    	//source为1.自己发的消息
+	    	if(message.id != user._id){
+	    		return fn(false);//回调，告诉客户端发送失败；
 	    	}
+	    	message.time = new Date().getTime().toString();
 	        socket.broadcast.to(roomId).emit('userMessage', message);
-	    	fn();//回调，告诉客户端发送成功；
+	    	fn(true);//回调，告诉客户端发送成功；
+	    	
+	    	//将消息先暂存
+	    	if(!chatMessage[roomId]){
+	    		chatMessage[roomId] = [];
+	    	}
+	    	chatMessage[roomId].push(message);
 	    })
 	    
 	    //连接成功发送消息
@@ -267,23 +295,23 @@ module.exports = function(io){
 	    
 	    //断开连接监听
 	    socket.on('disconnect', function(message){
-	    	//离开房间删除
-	    	for(let key in onlineNum[roomId]){
-	    		if(user._id == onlineNum[roomId][key].id){
-	    			onlineNum[roomId].splice(key, 1);
-	    		}
-	    	}
-    		//取消准备
-	    	if(readyNum[roomId] && !readyNum[roomId]['current']){
-	    		for(let key in readyNum[roomId]['gameNum']){
-	    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
-	    				readyNum[roomId]['gameNum'].splice(key, 1);
-	    			}
-	    		}
-	    	}
-    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 	        //当用户断开连接，是在房间页面断线，房间在线人数加-1，满足房间人数+1
 	        if(roomId){
+		    	//离开房间删除
+		    	for(let key in onlineNum[roomId]){
+		    		if(user._id == onlineNum[roomId][key].id){
+		    			onlineNum[roomId].splice(key, 1);
+		    		}
+		    	}
+	    		//取消准备
+		    	if(readyNum[roomId] && !readyNum[roomId]['current']){
+		    		for(let key in readyNum[roomId]['gameNum']){
+		    			if(readyNum[roomId]['gameNum'][key].userId == user._id){
+		    				readyNum[roomId]['gameNum'].splice(key, 1);
+		    			}
+		    		}
+		    	}
+	    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 	    		Room.updateRoom({
 					_id: ObjectID(roomId)
 				}, {
@@ -339,7 +367,8 @@ module.exports = function(io){
 	    		Room.updateRoom({
 					_id: ObjectID(roomId)
 				}, {
-					$set:{ingame: 0}
+					$set: {ingame: 0},
+					$pushAll: {chatmessage: chatMessage[roomId]}
 				}, function(err, result){
 		    		//取消准备
 		    		for(let key in onlineNum[roomId]){
@@ -349,6 +378,8 @@ module.exports = function(io){
 		    		readyNum[roomId]['vocable'] = null;
 		    		readyNum[roomId]['current'] = null;
 		    		readyNum[roomId]['gameNum'] = [];
+		    		//消息清空
+		    		chatMessage[roomId] = [];
 		    		io.sockets.in(roomId).emit('onlineNum', onlineNum[roomId]);
 					io.sockets.in(roomId).emit('endGame');
 				})

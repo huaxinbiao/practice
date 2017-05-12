@@ -53,6 +53,8 @@ exports.getRoomOne = function (roomId, callback = function(){}){
 			}
 			collection.findOne({
 				_id: ObjectID(roomId)
+			},{
+				chatmessage: 0
 			}, function(err, room){
 				db.close();
 				if(err){
@@ -90,7 +92,8 @@ exports.RandomRoom = function(query, callback = function(){}){
 		            var Random = RandomNum(0, total);
 		            collection.find(query, {
 		              	skip: Random-1,
-		              	limit: 1
+		              	limit: 1,
+		              	chatmessage: 0
 		            }).toArray(function (err, room) {
 		              	db.close();
 		              	if (err) {
@@ -125,6 +128,30 @@ exports.updateRoom = function (opation, data, callback){
 
 	});
 }
+
+//查找房间聊天历史记录
+exports.getRoomNews = function(query, page, callback = function(){}){
+	MongoClient.connect(mongoConnectUrl, function(err, db){
+		if(err){
+			return callback(err);
+		}
+		//读取rooms
+		db.collection('rooms',function(err, collection){
+			if(err){
+				db.close();
+				return callback(err);
+			}
+            collection.findOne(query, page, function (err, room){
+              	db.close();
+              	if (err) {
+                	return callback(err);
+              	}
+              	callback(null, room);
+            });
+		})
+	});
+}
+
 //返回min < r ≤ max随机数
 function RandomNum(Min, Max){
   	var Range = Max - Min;

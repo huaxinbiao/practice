@@ -7,8 +7,11 @@ const User = require('../models/user.js');
 module.exports = function(app){
 	app.use(function(req, res, next){
 		//设置跨域访问
-		/*let allowedOrigins = [
-		    "http://localhost:8080"
+		let allowedOrigins = [
+		    "http://localhost:8080",
+		    "http://192.168.1.131:8080",
+		    "http://www.5rgame.com",
+		    "http://5rgame.com"
 	  	];
 	　	// 这里是允许跨域的的domain列表
 	  	let origin = req.headers.origin;
@@ -19,13 +22,12 @@ module.exports = function(app){
 		  	res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
 		  	res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
 	  	}
-	
+	  	
 	  	if (req.method == 'OPTIONS') {
 	    	res.sendStatus(200); //让options请求快速返回
 	  	}else {
 	  		next();
-	  	}*/
-		next();
+	  	}
 	})
 	app.all('*', checkToken);
 	
@@ -114,8 +116,11 @@ module.exports = function(app){
 				res.json({
 					code: 200,
 					data:{
+						id: user._id,
 						mobile: user.mobile,
-						token: user.token
+						token: user.token,
+						head: user.head,
+						nick: user.nick
 					},
 					msg: '注册成功'
 				});
@@ -172,8 +177,11 @@ module.exports = function(app){
 					res.json({
 						code: 200,
 						data:{
+							id: user._id,
 							mobile: user.mobile,
-							token: token
+							token: token,
+							head: user.head,
+							nick: user.nick
 						},
 						msg: '登录成功'
 					});
@@ -199,8 +207,6 @@ module.exports = function(app){
 	//页面权限控制
 	function checkToken(req, res, next){
 		let url = req.url.split("?")[0];
-		console.log("2222222222222222222222222222222222222222222");
-		console.log(req.session);
 		if(url == '/login' || url == '/reg' || url == '/code' || url == '/' || url == '/index'){
 			return next();
 		}
@@ -220,7 +226,10 @@ module.exports = function(app){
 			return next();
 		}
 		if(!token){
-			return false;
+			return res.json({
+				code: 104,
+				msg: 'Token错误'
+			});
 		}
 		//获取用户信息
 		User.get({
@@ -234,7 +243,6 @@ module.exports = function(app){
 			}
 			if(user){
 				if(user.token != token){
-		console.log("33333333333333333333333333333333333333333333");
 					req.session.user = null;
 					return res.json({
 						code: 104,
