@@ -15,6 +15,9 @@ module.exports = function(io){
 	io.sockets.on('connection', function(socket){
 		var user = socket.request.session.user;  //获取session
 		var roomId = null;  //当前进入的房间id，进入房间赋值离开房间清除
+		var roomInfo = {
+			gamepeople: 0
+		}; //房间信息
 		if(!user){
 			socket.emit('nologin', {login: 0});
 			socket.disconnect();
@@ -50,6 +53,7 @@ module.exports = function(io){
 						
 					})
 		    		//为房间建立数组存放消息
+		    		roomInfo = room;
 		    		roomId = room._id;
 		    		if(!Messages[roomId]){
 		    			Messages[roomId] = [];
@@ -76,14 +80,15 @@ module.exports = function(io){
 		    		if(!readyNum[roomId]){
 		    			readyNum[roomId] = [];
 		    			readyNum[roomId]['start'] = room.gamepeople;
+		    			readyNum[roomId]['next'] = 0;
 		    		}
 		    		//将用户加入房间用户列表，房间在线人数加1，满足房间人数-1
 		    		Room.updateRoom({
 						_id: ObjectID(roomId)
 					}, {
-						$inc:{
-							online: 1,
-							below: -1,
+						$set:{
+							online: onlineNum[roomId].length,
+							below: roomInfo.gamepeople - onlineNum[roomId].length
 						},
 						$addToSet:{
 							gameuser: ObjectID(user._id)
@@ -134,9 +139,9 @@ module.exports = function(io){
     		Room.updateRoom({
 				_id: ObjectID(roomId)
 			}, {
-				$inc:{
-					online: -1,
-					below: 1
+				$set:{
+					online: onlineNum[roomId].length,
+					below: roomInfo.gamepeople - onlineNum[roomId].length
 				}
 			}, function(err, result){
 				
@@ -241,6 +246,7 @@ module.exports = function(io){
 	    //用户进入房间，获取已存在的房间消息，与画图坐标
 	    socket.on('getAllMessages', function(){
 	    	let vocable = null;
+	    	
 	    	if(readyNum[roomId] && readyNum[roomId]['vocable'] && readyNum[roomId]['current'] == socket.id){
 	    		vocable = readyNum[roomId]['vocable']
 	    	}
@@ -272,10 +278,20 @@ module.exports = function(io){
 	    
 	    //用户发送的聊天信息
 	    socket.on('chatMessage', function(message, fn){
+	    	let Correct = false;
 	    	//source为1.自己发的消息
 	    	if(message.id != user._id){
 	    		return fn(false);//回调，告诉客户端发送失败；
 	    	}
+	    	//判断是否猜中
+	    	if(readyNum[roomId] && readyNum[roomId]['vocable'] && !!readyNum[roomId]['current']){
+	    		//console.log(message.content, readyNum[roomId]['vocable'][0])
+	    		if(message.content.indexOf(readyNum[roomId]['vocable'][0]) > -1){
+	    			Correct = true;
+	    			message.content = '******';
+	    		}
+	    	}
+	    	
 	    	message.time = new Date().getTime().toString();
 	        socket.broadcast.to(roomId).emit('userMessage', message);
 	    	fn(true);//回调，告诉客户端发送成功；
@@ -285,6 +301,31 @@ module.exports = function(io){
 	    		chatMessage[roomId] = [];
 	    	}
 	    	chatMessage[roomId].push(message);
+	    	
+	    	//猜中通知
+	    	if(!readyNum[roomId]['correct']){
+	    		readyNum[roomId]['correct'] = [];
+	    	}
+	    	let correc_str = readyNum[roomId]['correct'].toString();
+	        if(Correct && readyNum[roomId]['current'] != socket.id && correc_str.indexOf(socket.id) < 0){
+	        	readyNum[roomId]['correct'].push(socket.id)
+	        	io.sockets.in(roomId).emit('userMessage', {
+	        		content: message.nick+'，猜中了。',
+					head: "",
+					id: "10000",
+					nick: "系统消息",
+					time: message.time
+	        	});
+	        	
+	        	//全部猜中开始下一位
+	        	if(readyNum[roomId]['correct'].length == roomInfo.gamepeople-1){
+	        		for(let key in readyNum[roomId]['gameNum']){
+	        			if(readyNum[roomId]['gameNum'][key].socketId == readyNum[roomId]['current']){
+	        				readyNum[roomId]['next'] = 1;
+	        			}
+	        		}
+	        	}
+	        }
 	    })
 	    
 	    //连接成功发送消息
@@ -315,9 +356,9 @@ module.exports = function(io){
 	    		Room.updateRoom({
 					_id: ObjectID(roomId)
 				}, {
-					$inc:{
-						online: -1,
-						below: 1,
+					$set:{
+						online: onlineNum[roomId].length,
+						below: roomInfo.gamepeople - onlineNum[roomId].length
 					}
 				}, function(err, result){
 					
@@ -332,7 +373,7 @@ module.exports = function(io){
 	    		count: --i,
 	    		number: number
 	    	});
-	    	if(i > 0){
+	    	if(i > 0 && readyNum[roomId]['next'] != 1){
 	    		//发送第一次提示
 	    		if(readyNum[roomId] && readyNum[roomId]['vocable'] && i == 60){
 	    			io.sockets.in(roomId).emit('vocablePrompt', {
@@ -354,6 +395,7 @@ module.exports = function(io){
 		    		}, 1000);
 	    		}
 	    	}else{
+	    		readyNum[roomId]['next'] = 1;
 	    		startDraw(number);
 	    	}
 	    }
@@ -362,7 +404,19 @@ module.exports = function(io){
 	    function startDraw(ci, no){
     		//清除画布信息
     		Messages[roomId] = [];
+    		readyNum[roomId]['correct'] = [];
 	    	if(ci >= readyNum[roomId]['start']){
+	    		//发送正确答案
+	    		if(readyNum[roomId]['next'] == 1){
+	    			readyNum[roomId]['next'] = 0;
+		    		io.sockets.in(roomId).emit('userMessage', {
+	        			content: '正确答案为‘ '+readyNum[roomId]['vocable'][0]+' ’，游戏结束。',
+						head: "",
+						id: "10000",
+						nick: "系统消息",
+						time: new Date().getTime().toString()
+		        	});
+	    		}
 	    		//游戏结束
 	    		Room.updateRoom({
 					_id: ObjectID(roomId)
@@ -394,6 +448,17 @@ module.exports = function(io){
 	    		//下一位
 	    		if(!readyNum[roomId]['gameNum']){
 	    			return startDraw(readyNum[roomId]['start']);
+	    		}
+	    		//发送正确答案
+	    		if(readyNum[roomId]['next'] == 1){
+	    			readyNum[roomId]['next'] = 0;
+		    		io.sockets.in(roomId).emit('userMessage', {
+		        		content: '正确答案为‘ '+readyNum[roomId]['vocable'][0]+' ’，开始下一位。',
+						head: "",
+						id: "10000",
+						nick: "系统消息",
+						time: new Date().getTime().toString()
+		        	});
 	    		}
 	    		readyNum[roomId]['current'] = readyNum[roomId]['gameNum'][ci].socketId;
 	    		io.sockets.in(readyNum[roomId]['gameNum'][ci].socketId).emit('Vocable', {

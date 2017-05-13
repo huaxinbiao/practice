@@ -36,7 +36,6 @@ module.exports = function(app){
 			gamepeople: req.body.playersnumber,
 			online: 0,
 			below: req.body.playersnumber,
-			ready: 0,
 			owner: user._id,
 			ingame: 0,
 			gameuser:[user._id]
