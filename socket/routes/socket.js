@@ -303,7 +303,7 @@ module.exports = function(io){
 	    	chatMessage[roomId].push(message);
 	    	
 	    	//猜中通知
-	    	if(!readyNum[roomId]['correct']){
+	    	if(readyNum[roomId] && !readyNum[roomId]['correct']){
 	    		readyNum[roomId]['correct'] = [];
 	    	}
 	    	let correc_str = readyNum[roomId]['correct'].toString();
