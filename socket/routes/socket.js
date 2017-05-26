@@ -230,6 +230,7 @@ module.exports = function(io){
 	    //用户选择词语
 	    socket.on('setVocable', function(message){
 	    	readyNum[roomId]['vocable'] = message;
+	    	console.log(readyNum[roomId]['vocable'], 3333)
 	    })
 	    
 	    //用户清除画布
@@ -309,13 +310,15 @@ module.exports = function(io){
 	    	let correc_str = readyNum[roomId]['correct'].toString();
 	        if(Correct && readyNum[roomId]['current'] != socket.id && correc_str.indexOf(socket.id) < 0){
 	        	readyNum[roomId]['correct'].push(socket.id)
-	        	io.sockets.in(roomId).emit('userMessage', {
+	        	let msg = {
 	        		content: message.nick+'，猜中了。',
 					head: "",
 					id: "10000",
 					nick: "系统消息",
 					time: message.time
-	        	});
+	        	};
+	        	chatMessage[roomId].push(msg);
+	        	io.sockets.in(roomId).emit('userMessage', msg);
 	        	
 	        	//全部猜中开始下一位
 	        	if(readyNum[roomId]['correct'].length == roomInfo.gamepeople-1){
@@ -368,6 +371,7 @@ module.exports = function(io){
 	    });
 	    
 	    //倒计时
+    	var timer = null;
 	    function countDown(i, number){
 	    	io.sockets.in(roomId).emit('countDown', {
 	    		count: --i,
@@ -388,14 +392,16 @@ module.exports = function(io){
 	    		}
 	    		//25秒内没有操作换下一位用户
 	    		if(Messages[roomId] && Messages[roomId].length < 1 && i == 65){
+	    			clearTimeout(timer);
 	    			startDraw(number, true);
 	    		}else{
-		    		setTimeout(function(){
+		    		timer = setTimeout(function(){
 		    			countDown(i, number);
 		    		}, 1000);
 	    		}
 	    	}else{
 	    		readyNum[roomId]['next'] = 1;
+    			clearTimeout(timer);
 	    		startDraw(number);
 	    	}
 	    }
@@ -409,13 +415,15 @@ module.exports = function(io){
 	    		//发送正确答案
 	    		if(readyNum[roomId]['next'] == 1){
 	    			readyNum[roomId]['next'] = 0;
-		    		io.sockets.in(roomId).emit('userMessage', {
+	    			let msg = {
 	        			content: '正确答案为‘ '+readyNum[roomId]['vocable'][0]+' ’，游戏结束。',
 						head: "",
 						id: "10000",
 						nick: "系统消息",
 						time: new Date().getTime().toString()
-		        	});
+		        	};
+	        		chatMessage[roomId].push(msg);
+		    		io.sockets.in(roomId).emit('userMessage', msg);
 	    		}
 	    		//游戏结束
 	    		Room.updateRoom({

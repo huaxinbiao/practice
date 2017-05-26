@@ -9,9 +9,10 @@ module.exports = function(app){
 		//设置跨域访问
 		let allowedOrigins = [
 		    "http://localhost:8080",
-		    "http://192.168.1.104:8080",
+		    "http://192.168.1.131:8080",
 		    "http://www.5rgame.com",
-		    "http://5rgame.com"
+		    "http://5rgame.com",
+		    "5rgame.com"
 	  	];
 	　	// 这里是允许跨域的的domain列表
 	  	let origin = req.headers.origin;
