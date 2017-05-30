@@ -208,14 +208,24 @@ module.exports = function(app){
 	//页面权限控制
 	function checkToken(req, res, next){
 		let url = req.url.split("?")[0];
-		if(url == '/login' || url == '/reg' || url == '/code' || url == '/' || url == '/index'){
+		var Route = ['/login', '/reg', '/code', '/', '/index'];
+		if(Route.indexOf(url) > -1){
 			return next();
 		}
-		if(!req.session.user){
+		var user = req.session.user;
+		if(!user){
 			return res.json({
 				code: 104,
 				msg: '请先登录'
 			});
+		}
+		//退出登录
+		if(url == '/outlogin'){
+			return next();
+		}
+		//上传文件
+		if(url == "/user/upload"){
+			return next();
 		}
 		//判断请求方式,获取token
 		if(req.method.toLowerCase() == 'get'){
@@ -223,17 +233,18 @@ module.exports = function(app){
 		}else{
 			var token = req.body.token;
 		}
-		if(url == '/outlogin'){
-			return next();
-		}
-		if(!token){
+		if(!token || user.token != token){
 			return res.json({
 				code: 104,
 				msg: 'Token错误'
 			});
 		}
+		if(user.token != token){
+			req.session.user = null;
+		}
+		next();
 		//获取用户信息
-		User.get({
+		/*User.get({
 				mobile: req.session.user.mobile
 			}, function(err, user){
 			if(err){
@@ -259,7 +270,7 @@ module.exports = function(app){
 					msg: '账号错误'
 				});
 			}
-		});
+		});*/
 	}
 }
 

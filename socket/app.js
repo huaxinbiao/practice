@@ -8,9 +8,11 @@ var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 
 var settings = require('./settings');
+//路由
 var routes = require('./routes/index');
 var Socket = require('./routes/socket');
 var room = require('./routes/room');
+var user = require('./routes/user');
 
 var app = express();
 //socket共享session
@@ -22,6 +24,7 @@ app.set('port',process.env.POST || 3000);
 app.set('views', path.join(__dirname, 'views'));//设置模板目录
 app.set('view engine', 'ejs');//设置模板引擎
 app.use(express.static(path.join(__dirname, '/static')));//设置静态文件存放目录
+app.use('/uploads', express.static('uploads')); //设置静态文件存放目录
 
 app.use(bodyParser.json());//加载解析json的中间件
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -47,8 +50,10 @@ sio.use(function(socket, next) {
 })
 app.use(sessionMiddleware);
 
+//加载路由
 routes(app);
 room(app);
+user(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

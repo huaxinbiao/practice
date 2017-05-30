@@ -17,13 +17,15 @@ User.prototype.save = function(callback){
 	let md5 = crypto.createHash('md5');
 	let token = md5.update(time+this.password+'HUA').digest('hex');
 	let user = {
-		mobile: this.mobile,
-		head: '',
-		password: this.password,
-		time: time,
-		room: [],
+		mobile: this.mobile,  //手机号
+		head: '',  //头像
+		password: this.password,  //密码
+		time: time,  //注册时间
+		room: [],  //房间
 		token: token,
-		nick: nickName()
+		nick: nickName(),  //随机昵称
+		individual: '', //个性签名
+		integral: 0 //积分
 	};
 	//打开数据库
 	MongoClient.connect(mongoConnectUrl, function(err, db){
