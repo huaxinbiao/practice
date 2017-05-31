@@ -36,18 +36,22 @@ exports.insertData = function(coll, data, callback){
  * @return {Null}
  *
  */
-exports.findData = function (coll, opation, callback){
+exports.findData = function (coll, opation, screem={}, callback=function(){}, key=null){
 	MongoClient.connect(mongoConnectUrl, function(err, db){
 		if(err) return console.log(err);
 		// 打开集合
 		var collection = db.collection(coll);
 		// 根据条件查询数据
-		var userData = collection.find(opation);
+		var userData = collection.find(opation, screem);
 		// 遍历数据
 		userData.toArray(function(err2, docs) {
 			// docs是查询出来的文档，json对象，可以打印出来看看
 			db.close();
-			callback(err2, docs);
+			if(key){
+				callback(err2, docs, key);
+			}else{
+				callback(err2, docs);
+			}
 		});
 
 	});

@@ -152,6 +152,7 @@ exports.getRoomNews = function(query, page, callback = function(){}){
 	});
 }
 
+
 //返回min < r ≤ max随机数
 function RandomNum(Min, Max){
   	var Range = Max - Min;

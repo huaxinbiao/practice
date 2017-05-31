@@ -50,7 +50,6 @@ module.exports = function(io){
 							room: ObjectID(message.room_id)
 						}
 					}, function(err, result){
-						
 					})
 		    		//为房间建立数组存放消息
 		    		roomInfo = room;

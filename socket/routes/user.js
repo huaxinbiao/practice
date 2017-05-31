@@ -84,7 +84,7 @@ module.exports = function(app){
 		//判断请求方式,获取token
 		var token = req.body.token;
 		var user = req.session.user;
-		if(!token || user.token != token){
+		if(!token || !user){
 			return res.json({
 				code: 104,
 				msg: 'Token错误'
@@ -92,6 +92,10 @@ module.exports = function(app){
 		}
 		if(user.token != token){
 			req.session.user = null;
+			return res.json({
+				code: 104,
+				msg: 'Token错误'
+			});
 		}
 		 // 没有附带文件
 	  	if (!req.file) {

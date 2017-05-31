@@ -1,7 +1,7 @@
 {
   "name": "socket",
   "version": "1.0.0",
-  "description": "",
+  "description": "社交游戏",
   "main": "index.js",
   "dependencies": {
     "body-parser": "~1.15.1",
@@ -14,7 +14,8 @@
     "mongoose": "^4.9.4",
     "multer": "^1.3.0",
     "socket.io": "^1.5.1",
-    "svg-captcha": "^1.3.4"
+    "svg-captcha": "^1.3.4",
+    "validator": "^7.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,5 +24,9 @@
   "license": "ISC",
   "devDependencies": {
     "mongodb": "^2.2.16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huaxinbiao/practice/tree/master/socket"
   }
 }

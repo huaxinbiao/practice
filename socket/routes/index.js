@@ -208,7 +208,7 @@ module.exports = function(app){
 	//页面权限控制
 	function checkToken(req, res, next){
 		let url = req.url.split("?")[0];
-		var Route = ['/login', '/reg', '/code', '/', '/index'];
+		var Route = ['/login', '/reg', '/code', '/', '/index', '/user/upload'];
 		if(Route.indexOf(url) > -1){
 			return next();
 		}
@@ -223,17 +223,15 @@ module.exports = function(app){
 		if(url == '/outlogin'){
 			return next();
 		}
-		//上传文件
-		if(url == "/user/upload"){
-			return next();
-		}
+		
 		//判断请求方式,获取token
 		if(req.method.toLowerCase() == 'get'){
 			var token = req.query.token;
 		}else{
 			var token = req.body.token;
 		}
-		if(!token || user.token != token){
+		
+		/*if(!token || user.token != token){
 			return res.json({
 				code: 104,
 				msg: 'Token错误'
@@ -242,9 +240,10 @@ module.exports = function(app){
 		if(user.token != token){
 			req.session.user = null;
 		}
-		next();
+		next();*/
+		
 		//获取用户信息
-		/*User.get({
+		User.get({
 				mobile: req.session.user.mobile
 			}, function(err, user){
 			if(err){
@@ -270,7 +269,7 @@ module.exports = function(app){
 					msg: '账号错误'
 				});
 			}
-		});*/
+		});
 	}
 }
 

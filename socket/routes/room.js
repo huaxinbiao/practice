@@ -38,7 +38,7 @@ module.exports = function(app){
 			below: req.body.playersnumber,
 			owner: user._id,
 			ingame: 0,
-			gameuser:[user._id]
+			gameuser:[ObjectID(user._id)]
 		}, function(err, room){
 			//当房间创建成功将房间id放入用户信息中
 			complete = true;
@@ -76,6 +76,8 @@ module.exports = function(app){
 			_id: {
 				"$in": objId
 			}
+		}, { 
+			gameuser: {$slice: 9}
 		}, function(err, room){
 			//当房间创建成功将房间id放入用户信息中
 			if(err){
@@ -84,12 +86,37 @@ module.exports = function(app){
 					msg: '获取房间列表错误'
 				});
 			}
-			res.status(200);
-			res.json({
-				code: 200,
-				data: room,
-				msg: '获取房间列表成功'
-			});
+			for(key in room){
+				Basic.findData('users', {
+					_id: {
+						"$in": room[key].gameuser
+					}
+				},{
+				    head: 1,
+				    nick: 1
+				}, function(err, user, key){
+					if(err){
+						return res.json({
+							code: 103,
+							msg: '获取房间列表错误'
+						});
+					}
+					getinfo(user, key)
+				}, key)
+			}
+			var i = 0;
+			var getinfo = function(user, key){
+				room[key].gameuserinfo = user;
+				i++;
+				if(i == room.length){
+					res.status(200);
+					return res.json({
+						code: 200,
+						data: room,
+						msg: '获取房间列表成功'
+					});
+				}
+			}
 		})
 	});
 	
