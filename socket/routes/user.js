@@ -1,12 +1,14 @@
 const validator = require('validator');//表单验证
 const Room = require('../models/room.js');
 const User = require('../models/user.js');
+const Index = require('../models/index.js');
 const Basic = require('../models/basic.js');
 const ObjectID = require('mongodb').ObjectID;
 const muilter = require('../models/multerUtil.js');
 const path = require('path');
 const fs = require('fs');
 const images = require("images");
+const Promise = require('bluebird');
 
 //个人信息
 module.exports = function(app){
@@ -187,5 +189,23 @@ module.exports = function(app){
 				})
 		    }
 	  	});
+	});
+	
+	//签到
+	app.post('/user/sign', function(req, res){
+		
+	});
+	
+	app.get('/user/sign', function(req, res){
+		Index.Sign().then((promiseData) => {
+			console.log(promiseData)
+		  	return res.json({
+				code: 200,
+				data: {
+					sign: promiseData
+				},
+				msg: '签到成功'
+			});
+		})
 	})
 }
